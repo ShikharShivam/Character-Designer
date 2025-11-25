@@ -1,0 +1,147 @@
+
+import React, { useState, useEffect } from 'react';
+import Controls from './components/Controls';
+import CharacterCard from './components/CharacterCard';
+import { CharacterData, GeneratedCharacter, GenerationOptions, GenerationStatus } from './types';
+import { generateCharacterProfile, generateCharacterImage } from './services/geminiService';
+import { Sword, Github } from 'lucide-react';
+
+const App: React.FC = () => {
+  const [character, setCharacter] = useState<GeneratedCharacter | null>(null);
+  const [status, setStatus] = useState<GenerationStatus>('idle');
+  const [error, setError] = useState<string | null>(null);
+  
+  const [options, setOptions] = useState<GenerationOptions>({
+    gender: 'Random',
+    theme: 'Random',
+    weapon: 'Random',
+    nationality: 'Random',
+    ethnicity: 'Random',
+    personality: 'Random',
+    martialArtStyle: 'Random',
+    customName: '',
+    includeAlternateOutfits: false
+  });
+
+  const handleGenerate = async () => {
+    setStatus('generating_text');
+    setError(null);
+
+    try {
+      // 1. Generate Text Profile
+      const profileData = await generateCharacterProfile(options);
+      
+      const newCharacter: GeneratedCharacter = {
+        ...profileData,
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+      };
+      
+      // Show text immediately
+      setCharacter(newCharacter);
+      
+      // 2. Generate Visual Reference
+      setStatus('generating_image');
+      const imageUrl = await generateCharacterImage(profileData);
+      
+      // Update with image
+      if (imageUrl) {
+        setCharacter(prev => prev ? { ...prev, imageUrl } : null);
+      }
+      
+      setStatus('complete');
+      
+    } catch (err: any) {
+      console.error("Generation failed", err);
+      setError(err.message || "Failed to generate character. Please check API Key or try again.");
+      setStatus('error');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-forge-dark text-slate-200 font-sans pb-20">
+      
+      {/* Navbar */}
+      <nav className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-tr from-cyan-600 to-blue-600 p-2 rounded-lg">
+              <Sword className="text-white h-6 w-6" />
+            </div>
+            <h1 className="text-xl font-bold tracking-tight text-white">
+              Martial Arts <span className="text-forge-accent">Forge</span>
+            </h1>
+          </div>
+          <div className="text-sm text-slate-500 hidden sm:block">
+            Powered by Gemini 2.5
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        {/* Intro */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
+            Design Your Ultimate Fighter
+          </h2>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            Generate production-ready character concepts with detailed 3D modeling specifications, 
+            unique fighting styles, and visual references.
+          </p>
+        </div>
+
+        {/* Controls */}
+        <Controls 
+          options={options} 
+          setOptions={setOptions} 
+          onGenerate={handleGenerate}
+          isGenerating={status === 'generating_text' || status === 'generating_image'}
+        />
+
+        {/* Loading / Status Message */}
+        {status !== 'idle' && status !== 'complete' && status !== 'error' && (
+          <div className="text-center py-8 animate-pulse">
+            <p className="text-forge-accent font-medium text-lg">
+              {status === 'generating_text' ? 'Analyzing fighting styles & weaving backstory...' : 'Rendering concept art reference...'}
+            </p>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-lg text-center mb-8">
+            {error}
+          </div>
+        )}
+
+        {/* Result Area */}
+        {character && (
+          <div className="space-y-6">
+             <CharacterCard character={character} />
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!character && status === 'idle' && (
+          <div className="text-center py-20 border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/20">
+            <div className="opacity-30 flex flex-col items-center">
+              <Sword size={64} className="mb-4" />
+              <p className="text-xl font-semibold">Ready to Forge</p>
+              <p className="text-sm mt-2">Select options above and click Generate</p>
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-800 mt-20 py-8 text-center text-slate-600 text-sm">
+        <p>&copy; {new Date().getFullYear()} Martial Arts Character Forge. Built with React & Gemini.</p>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
