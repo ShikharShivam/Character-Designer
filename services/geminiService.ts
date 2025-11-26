@@ -10,9 +10,13 @@ const CHARACTER_SCHEMA = {
   type: Type.OBJECT,
   properties: {
     name: { type: Type.STRING },
+    species: { type: Type.STRING },
     gender: { type: Type.STRING },
     nationality: { type: Type.STRING },
     age: { type: Type.INTEGER },
+    ageGroup: { type: Type.STRING, description: "e.g. Young Adult, Veteran, Ancient" },
+    alignment: { type: Type.STRING, description: "e.g. Hero, Villain, Anti-Hero, Neutral" },
+    element: { type: Type.STRING, description: "Primary elemental affinity or power source (e.g. Fire, Tech, Physical)" },
     martialArtStyle: { type: Type.STRING, description: "The primary martial art style used by the character (e.g. Kung Fu, Muay Thai, etc.)" },
     build: {
       type: Type.OBJECT,
@@ -79,7 +83,7 @@ const CHARACTER_SCHEMA = {
     },
     backstory: { type: Type.STRING },
   },
-  required: ["name", "gender", "nationality", "martialArtStyle", "build", "weapon", "outfit", "colorPalette", "fightingStance"],
+  required: ["name", "species", "gender", "nationality", "age", "ageGroup", "alignment", "element", "martialArtStyle", "build", "weapon", "outfit", "colorPalette", "fightingStance"],
 };
 
 export const generateCharacterProfile = async (options: GenerationOptions): Promise<CharacterData> => {
@@ -90,10 +94,14 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
   const genderPrompt = options.gender && options.gender !== 'Random' 
     ? `Gender: ${options.gender}` 
     : "Gender: Any";
+
+  const speciesPrompt = options.species && options.species !== 'Random'
+    ? `Species: ${options.species}`
+    : "Species: Any (Human, Anthropomorphic Animal, Robot, etc. based on creativity)";
     
   const nationalityPrompt = options.nationality && options.nationality !== 'Random' 
-    ? `Nationality: ${options.nationality}` 
-    : "Nationality: Appropriate to theme";
+    ? `Nationality/Origin: ${options.nationality}` 
+    : "Nationality/Origin: Appropriate to theme";
 
   const ethnicityPrompt = options.ethnicity && options.ethnicity !== 'Random' 
     ? `Ethnicity/Heritage: ${options.ethnicity}` 
@@ -115,16 +123,35 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     ? `Martial Arts Style: ${options.martialArtStyle}`
     : "Martial Arts Style: Select a distinct real-world or believable fictional martial art";
 
-  const alternateOutfitsPrompt = options.includeAlternateOutfits
-    ? "Generate 2 distinct additional alternate outfits (e.g., Training Gear, Formal Wear, Stealth, or Casual) in the 'alternateOutfits' array. Each must have a name, description, and list of materials."
+  const ageGroupPrompt = options.ageGroup && options.ageGroup !== 'Random'
+    ? `Age Group: ${options.ageGroup}`
+    : "Age: Appropriate for a fighter";
+
+  const alignmentPrompt = options.alignment && options.alignment !== 'Random'
+    ? `Alignment: ${options.alignment}`
+    : "Alignment: Any";
+
+  const elementPrompt = options.element && options.element !== 'Random'
+    ? `Elemental Affinity / Power Source: ${options.element}`
+    : "Elemental Affinity: Any or None (Physical)";
+
+  const count = options.alternateOutfitsCount || 0;
+  const alternateOutfitsPrompt = count > 0
+    ? `Generate ${count} distinct additional alternate outfits (e.g., Training Gear, Formal Wear, Stealth, Casual, or Battle-Damaged) in the 'alternateOutfits' array. Each must have a name, description, and list of materials.`
+    : "";
+
+  const customInstructions = options.customPrompt && options.customPrompt.trim() !== ''
+    ? `USER CUSTOM INSTRUCTIONS (PRIORITY): ${options.customPrompt}`
     : "";
 
   const prompt = `
     Generate a detailed, 3D-ready martial artist character profile.
-    The character should be unique, with specific attention to physical build, detailed outfit textures/materials (for 3D modeling reference), a distinct fighting stance, and a signature weapon or fighting tool.
+    The character can be human, animal, robot, or supernatural entity.
+    Specific attention to physical build, detailed outfit textures/materials (for 3D modeling reference), a distinct fighting stance, and a signature weapon or fighting tool.
     
     Constraints & Preferences:
     - ${namePrompt}
+    - ${speciesPrompt}
     - ${genderPrompt}
     - ${nationalityPrompt}
     - ${ethnicityPrompt}
@@ -132,12 +159,21 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     - ${personalityPrompt}
     - ${themePrompt}
     - ${weaponPrompt}
+    - ${ageGroupPrompt}
+    - ${alignmentPrompt}
+    - ${elementPrompt}
+    
+    ${customInstructions}
     
     ${alternateOutfitsPrompt}
     
     Ensure the color palette provides valid Hex codes.
     The fighting stance should be described technically for animation reference and must reflect the chosen Martial Arts Style.
     If a specific nationality or ethnicity is requested, ensure the outfit and name reflect it culturally where appropriate, unless the Theme dictates otherwise (e.g. Cyberpunk).
+    If the species is non-human (e.g. Panda, Tiger, Robot), ensure the Martial Arts style is adapted to their physiology.
+    Include the 'element' field to describe their magical or technological power source (e.g. "Fire", "Ki", "Hydraulics").
+    Include the 'alignment' field (e.g. "Hero", "Villain").
+    Include the 'ageGroup' field (e.g. "Young Adult", "Veteran").
   `;
 
   try {
@@ -165,8 +201,12 @@ export const generateCharacterImage = async (character: CharacterData): Promise<
   const prompt = `
     Full body concept art character design of a martial artist.
     Name: ${character.name}.
+    Species: ${character.species}.
     Gender: ${character.gender}.
-    Nationality: ${character.nationality}.
+    Age: ${character.age} (${character.ageGroup}).
+    Alignment: ${character.alignment}.
+    Element/Power: ${character.element}.
+    Origin/Nationality: ${character.nationality}.
     Martial Arts Style: ${character.martialArtStyle}.
     Build: ${character.build.description}.
     Weapon: ${character.weapon.name} (${character.weapon.type}).

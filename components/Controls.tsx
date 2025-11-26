@@ -1,8 +1,9 @@
 
+
 import React from 'react';
 import { GenerationOptions } from '../types';
 import Button from './Button';
-import { Sparkles, UserCircle, Layers } from 'lucide-react';
+import { Sparkles, UserCircle, MessageSquare } from 'lucide-react';
 
 interface ControlsProps {
   options: GenerationOptions;
@@ -39,6 +40,27 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+        
+        {/* Species */}
+        <div>
+          <label className={labelClasses}>Species</label>
+          <select 
+            className={inputClasses}
+            value={options.species || 'Random'}
+            onChange={(e) => handleChange('species', e.target.value)}
+          >
+            <option value="Random">Random</option>
+            <option value="Human">Human</option>
+            <option value="Cyborg/Android">Cyborg / Android</option>
+            <option value="Anthropomorphic Animal">Beast-kin / Anthro (e.g. Panda)</option>
+            <option value="Elf">Elf / Fae</option>
+            <option value="Orc">Orc / Ogre</option>
+            <option value="Demon">Demon / Spirit</option>
+            <option value="Alien">Alien</option>
+            <option value="Undead">Undead / Vampire</option>
+          </select>
+        </div>
+
         {/* Gender */}
         <div>
           <label className={labelClasses}>Gender</label>
@@ -54,9 +76,28 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
           </select>
         </div>
 
+        {/* Age Group */}
+        <div>
+          <label className={labelClasses}>Age Group</label>
+          <select 
+             className={inputClasses}
+            value={options.ageGroup || 'Random'}
+            onChange={(e) => handleChange('ageGroup', e.target.value)}
+          >
+            <option value="Random">Random</option>
+            <option value="Child">Child Prodigy</option>
+            <option value="Teen">Teenager</option>
+            <option value="Young Adult">Young Adult</option>
+            <option value="Adult">Adult (Prime)</option>
+            <option value="Veteran">Veteran (Middle-aged)</option>
+            <option value="Elderly">Elder / Old Master</option>
+            <option value="Ancient">Ancient / Timeless</option>
+          </select>
+        </div>
+
         {/* Nationality */}
         <div>
-          <label className={labelClasses}>Nationality</label>
+          <label className={labelClasses}>Nationality / Origin</label>
           <select 
              className={inputClasses}
             value={options.nationality || 'Random'}
@@ -73,12 +114,13 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
             <option value="Filipino">Filipino</option>
             <option value="Indian">Indian</option>
             <option value="French">French</option>
+            <option value="Other">Other / Fantasy Realm</option>
           </select>
         </div>
 
         {/* Ethnicity */}
         <div>
-          <label className={labelClasses}>Ethnicity</label>
+          <label className={labelClasses}>Ethnicity / Heritage</label>
           <select 
              className={inputClasses}
             value={options.ethnicity || 'Random'}
@@ -98,7 +140,26 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
           </select>
         </div>
 
-        {/* Martial Art Style - NEW */}
+        {/* Alignment */}
+        <div>
+          <label className={labelClasses}>Alignment / Role</label>
+          <select 
+             className={inputClasses}
+            value={options.alignment || 'Random'}
+            onChange={(e) => handleChange('alignment', e.target.value)}
+          >
+            <option value="Random">Random</option>
+            <option value="Hero">Hero / Protagonist</option>
+            <option value="Villain">Villain / Antagonist</option>
+            <option value="Anti-Hero">Anti-Hero</option>
+            <option value="Neutral">Neutral / Wanderer</option>
+            <option value="Rival">Rival</option>
+            <option value="Mentor">Mentor</option>
+            <option value="Minion">Minion / Grunt</option>
+          </select>
+        </div>
+
+        {/* Martial Art Style */}
         <div>
           <label className={labelClasses}>Martial Art Style</label>
           <select 
@@ -107,19 +168,55 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
             onChange={(e) => handleChange('martialArtStyle', e.target.value)}
           >
             <option value="Random">Random</option>
-            <option value="Kung Fu">Kung Fu / Wushu</option>
-            <option value="Karate">Karate</option>
-            <option value="Muay Thai">Muay Thai</option>
-            <option value="Taekwondo">Taekwondo</option>
-            <option value="Judo">Judo</option>
-            <option value="Jiu-Jitsu">Brazillian Jiu-Jitsu</option>
-            <option value="Boxing">Boxing / Kickboxing</option>
-            <option value="Capoeira">Capoeira</option>
-            <option value="Ninjutsu">Ninjutsu</option>
-            <option value="Krav Maga">Krav Maga</option>
-            <option value="Jeet Kune Do">Jeet Kune Do</option>
-            <option value="Silat">Silat</option>
-            <option value="MMA">MMA / Hybrid</option>
+            <optgroup label="Chinese Arts">
+              <option value="Kung Fu">Kung Fu / Wushu</option>
+              <option value="Shaolin">Shaolin Kung Fu</option>
+              <option value="Wing Chun">Wing Chun</option>
+              <option value="Tai Chi">Tai Chi (Combat)</option>
+              <option value="Baguazhang">Baguazhang</option>
+              <option value="Xingyiquan">Xingyiquan</option>
+              <option value="Bajiquan">Bajiquan</option>
+              <option value="Drunken Boxing">Zui Quan (Drunken Boxing)</option>
+              <option value="Mantis Style">Praying Mantis</option>
+              <option value="Monkey Style">Monkey Style</option>
+              <option value="Jeet Kune Do">Jeet Kune Do</option>
+            </optgroup>
+            
+            <optgroup label="Japanese & Korean Arts">
+              <option value="Karate">Karate</option>
+              <option value="Taekwondo">Taekwondo</option>
+              <option value="Judo">Judo</option>
+              <option value="Aikido">Aikido</option>
+              <option value="Hapkido">Hapkido</option>
+              <option value="Kendo">Kendo / Kenjutsu</option>
+              <option value="Iaido">Iaido</option>
+              <option value="Ninjutsu">Ninjutsu</option>
+              <option value="Sumo">Sumo</option>
+              <option value="Kyokushin">Kyokushin Karate</option>
+            </optgroup>
+
+            <optgroup label="Southeast Asian & Pacific">
+              <option value="Muay Thai">Muay Thai</option>
+              <option value="Muay Boran">Muay Boran</option>
+              <option value="Lethwei">Lethwei (Burmese Boxing)</option>
+              <option value="Silat">Silat</option>
+              <option value="Eskrima">Eskrima / Arnis / Kali</option>
+              <option value="Bokator">Bokator</option>
+            </optgroup>
+
+            <optgroup label="Western, Grappling & Modern">
+              <option value="Boxing">Boxing</option>
+              <option value="Kickboxing">Kickboxing</option>
+              <option value="Savate">Savate (French Boxing)</option>
+              <option value="Wrestling">Wrestling (Greco-Roman/Catch)</option>
+              <option value="Brazillian Jiu-Jitsu">Brazilian Jiu-Jitsu</option>
+              <option value="Sambo">Sambo</option>
+              <option value="Systema">Systema</option>
+              <option value="Krav Maga">Krav Maga</option>
+              <option value="Capoeira">Capoeira</option>
+              <option value="Pankration">Pankration</option>
+              <option value="MMA">MMA / Hybrid</option>
+            </optgroup>
           </select>
         </div>
 
@@ -140,6 +237,33 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
             <option value="Jovial Brawler">Jovial Brawler</option>
             <option value="Silent Assassin">Silent Assassin</option>
             <option value="Reluctant Hero">Reluctant Hero</option>
+          </select>
+        </div>
+
+        {/* Elemental Affinity */}
+        <div>
+          <label className={labelClasses}>Elemental Affinity</label>
+          <select 
+             className={inputClasses}
+            value={options.element || 'Random'}
+            onChange={(e) => handleChange('element', e.target.value)}
+          >
+            <option value="Random">Random</option>
+            <option value="None/Physical">None (Physical Only)</option>
+            <option value="Fire">Fire / Heat</option>
+            <option value="Water">Water</option>
+            <option value="Ice">Ice / Cold</option>
+            <option value="Wind">Wind / Air</option>
+            <option value="Lightning">Lightning / Electric</option>
+            <option value="Earth">Earth / Stone</option>
+            <option value="Metal">Metal</option>
+            <option value="Nature">Nature / Wood</option>
+            <option value="Light">Light / Holy</option>
+            <option value="Shadow">Shadow / Void</option>
+            <option value="Tech">Tech / Cybernetic</option>
+            <option value="Psychic">Psychic / Mental</option>
+            <option value="Poison">Poison / Venom</option>
+            <option value="Spirit">Spirit / Chi</option>
           </select>
         </div>
 
@@ -170,27 +294,48 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
           >
             <option value="Random">Random</option>
             <option value="Unarmed">Unarmed / Hand-to-Hand</option>
-            <option value="Sword">Sword / Blade</option>
-            <option value="Staff">Staff / Polearm</option>
+            <option value="Sword">Sword / Katana / Blade</option>
+            <option value="Staff">Staff / Spear / Polearm</option>
+            <option value="Daggers">Daggers / Knives</option>
+            <option value="Nunchaku">Nunchaku / Flail</option>
+            <option value="Tonfa">Tonfa / Batons</option>
+            <option value="Bow">Bow / Archery</option>
+            <option value="Axe">Axe / Hammer</option>
+            <option value="Chain">Chain / Whip</option>
+            <option value="Scythe">Scythe / Sickle</option>
+            <option value="Fans">War Fans</option>
+            <option value="Firearms">Firearms / Gun-Fu</option>
             <option value="Unique">Unique / Exotic</option>
+          </select>
+        </div>
+
+        {/* Alternate Outfits Count */}
+        <div>
+          <label className={labelClasses}>Alternate Outfits</label>
+          <select 
+             className={inputClasses}
+            value={options.alternateOutfitsCount || 0}
+            onChange={(e) => handleChange('alternateOutfitsCount', parseInt(e.target.value))}
+          >
+            <option value={0}>None</option>
+            <option value={1}>1 Extra Outfit</option>
+            <option value={2}>2 Extra Outfits</option>
+            <option value={3}>3 Extra Outfits</option>
           </select>
         </div>
       </div>
 
-      {/* Extra Options Toggle */}
-      <div className="mb-8 p-4 bg-slate-900/30 rounded-lg border border-slate-700/50 flex items-center justify-between cursor-pointer hover:bg-slate-900/50 transition-colors"
-           onClick={() => handleChange('includeAlternateOutfits', !options.includeAlternateOutfits)}>
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-md ${options.includeAlternateOutfits ? 'bg-forge-accent text-white' : 'bg-slate-700 text-slate-400'}`}>
-            <Layers size={18} />
-          </div>
-          <div>
-            <span className="text-sm font-semibold text-slate-200 block">Generate Alternate Outfits</span>
-            <span className="text-xs text-slate-500">Create additional outfit variations (e.g. Training, Formal, Stealth)</span>
-          </div>
-        </div>
-        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${options.includeAlternateOutfits ? 'bg-forge-accent' : 'bg-slate-700'}`}>
-          <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${options.includeAlternateOutfits ? 'translate-x-6' : 'translate-x-0'}`} />
+       {/* Custom Prompt Input - NEW */}
+       <div className="mb-6">
+        <label className={labelClasses}>Custom Instructions / Prompt</label>
+        <div className="relative">
+          <MessageSquare className="absolute left-3 top-3 text-slate-500" size={20} />
+          <textarea
+            className={`${inputClasses} pl-10 h-24 resize-none`}
+            placeholder="Describe specific details... e.g. 'A futuristic samurai with a neon katana' or 'A panda wearing Shaolin monk robes'"
+            value={options.customPrompt || ''}
+            onChange={(e) => handleChange('customPrompt', e.target.value)}
+          />
         </div>
       </div>
 

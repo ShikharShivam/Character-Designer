@@ -1,4 +1,5 @@
 
+
 export interface Outfit {
   name: string;
   description: string;
@@ -7,9 +8,13 @@ export interface Outfit {
 
 export interface CharacterData {
   name: string;
+  species: string;
   gender: string;
   nationality: string;
   age: number;
+  ageGroup: string;
+  alignment: string;
+  element: string;
   martialArtStyle: string;
   build: {
     type: string;
@@ -46,12 +51,17 @@ export type GenerationStatus = 'idle' | 'generating_text' | 'generating_image' |
 
 export interface GenerationOptions {
   gender?: 'Male' | 'Female' | 'Non-binary' | 'Random';
+  species?: string;
   theme?: 'Traditional' | 'Cyberpunk' | 'Fantasy' | 'Modern' | 'Post-Apocalyptic' | 'Random';
-  weapon?: 'Unarmed' | 'Sword' | 'Staff' | 'Unique' | 'Random';
+  weapon?: 'Unarmed' | 'Sword' | 'Staff' | 'Unique' | 'Random' | 'Daggers' | 'Nunchaku' | 'Bow' | 'Axe' | 'Chain' | 'Scythe' | 'Fans' | 'Firearms' | 'Tonfa';
   martialArtStyle?: string;
   customName?: string;
   nationality?: string;
   ethnicity?: string;
   personality?: string;
-  includeAlternateOutfits?: boolean;
+  ageGroup?: string;
+  alignment?: string;
+  element?: string;
+  alternateOutfitsCount?: number;
+  customPrompt?: string;
 }

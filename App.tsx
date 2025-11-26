@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import Controls from './components/Controls';
 import CharacterCard from './components/CharacterCard';
@@ -13,14 +14,19 @@ const App: React.FC = () => {
   
   const [options, setOptions] = useState<GenerationOptions>({
     gender: 'Random',
+    species: 'Random',
     theme: 'Random',
     weapon: 'Random',
     nationality: 'Random',
     ethnicity: 'Random',
     personality: 'Random',
     martialArtStyle: 'Random',
+    ageGroup: 'Random',
+    alignment: 'Random',
+    element: 'Random',
     customName: '',
-    includeAlternateOutfits: false
+    customPrompt: '',
+    alternateOutfitsCount: 0
   });
 
   const handleGenerate = async () => {
