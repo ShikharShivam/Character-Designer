@@ -276,11 +276,45 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
             onChange={(e) => handleChange('theme', e.target.value)}
           >
             <option value="Random">Random</option>
-            <option value="Traditional">Traditional</option>
-            <option value="Modern">Modern</option>
-            <option value="Cyberpunk">Cyberpunk</option>
-            <option value="Fantasy">Fantasy</option>
-            <option value="Post-Apocalyptic">Post-Apocalyptic</option>
+            
+            <optgroup label="Historical & Traditional">
+              <option value="Traditional">Traditional</option>
+              <option value="Samurai">Samurai / Ronin</option>
+              <option value="Ninja">Ninja / Shinobi</option>
+              <option value="Norse/Viking">Norse / Viking</option>
+              <option value="Medieval">Medieval Knight</option>
+              <option value="Gladiator">Gladiator / Spartan</option>
+              <option value="Ancient Mythology">Ancient Mythology</option>
+              <option value="Ancient Tribal">Ancient Tribal / Jungle Warrior</option>
+              <option value="Noble Fighters">Noble / Royal Guard</option>
+            </optgroup>
+
+            <optgroup label="Modern & Street">
+              <option value="Modern">Modern</option>
+              <option value="Street Fighters">Street Fighter</option>
+              <option value="UFC style">UFC / Pro MMA</option>
+              <option value="Military">Military / Soldier</option>
+              <option value="Gangsters">Gangster / Yakuza / Mafia</option>
+              <option value="Underworld">Underworld / Assassin</option>
+            </optgroup>
+
+            <optgroup label="Fantasy & Supernatural">
+              <option value="Fantasy">Fantasy</option>
+              <option value="Magic Knights">Magic Knight / Rune Warrior</option>
+              <option value="God-Tier">God-Tier / Legendary</option>
+              <option value="Hell-Powered Warriors">Hell-Powered / Demonic</option>
+              <option value="Beast-Style Fighters">Beast-Style Fighter</option>
+              <option value="Primal Fighters">Primal / Savage</option>
+              <option value="Mortal-Kombat style">Mortal-Kombat Style</option>
+            </optgroup>
+
+            <optgroup label="Sci-Fi & Future">
+              <option value="Sci-fi">Sci-Fi</option>
+              <option value="Cyberpunk">Cyberpunk</option>
+              <option value="Space Warriors">Space Warrior</option>
+              <option value="Post-Apocalyptic">Post-Apocalyptic</option>
+              <option value="Arena Warriors">Arena / Mecha Pilot</option>
+            </optgroup>
           </select>
         </div>
 

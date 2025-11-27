@@ -52,7 +52,7 @@ export type GenerationStatus = 'idle' | 'generating_text' | 'generating_image' |
 export interface GenerationOptions {
   gender?: 'Male' | 'Female' | 'Non-binary' | 'Random';
   species?: string;
-  theme?: 'Traditional' | 'Cyberpunk' | 'Fantasy' | 'Modern' | 'Post-Apocalyptic' | 'Random';
+  theme?: string;
   weapon?: 'Unarmed' | 'Sword' | 'Staff' | 'Unique' | 'Random' | 'Daggers' | 'Nunchaku' | 'Bow' | 'Axe' | 'Chain' | 'Scythe' | 'Fans' | 'Firearms' | 'Tonfa';
   martialArtStyle?: string;
   customName?: string;
