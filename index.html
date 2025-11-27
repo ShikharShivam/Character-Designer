@@ -30,6 +30,23 @@
             backgroundImage: {
               'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
               'gold-sheen': 'linear-gradient(135deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 60%)',
+            },
+            animation: {
+              'blob': 'blob 25s infinite',
+              'drift': 'drift 60s linear infinite',
+              'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.2)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.8)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              },
+              drift: {
+                '0%': { backgroundPosition: '0% 0%' },
+                '100%': { backgroundPosition: '100% 100%' },
+              }
             }
           },
         },
@@ -61,6 +78,12 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(212, 175, 55, 0.15);
+      }
+      .animate-delay-2000 {
+        animation-delay: 2s;
+      }
+      .animate-delay-4000 {
+        animation-delay: 4s;
       }
     </style>
   <script type="importmap">

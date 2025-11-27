@@ -120,13 +120,21 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-master-bg text-master-ivory font-sans selection:bg-master-gold selection:text-master-bg overflow-x-hidden relative">
       
-      {/* Background Ambience */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] mix-blend-screen"></div>
-         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-master-gold/5 rounded-full blur-[120px] mix-blend-screen"></div>
-         <div className="absolute inset-0 bg-gradient-radial from-transparent to-master-bg opacity-80"></div>
-         {/* Subtle Grid Pattern */}
-         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+      {/* Background Ambience - Animated */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+         {/* Base */}
+         <div className="absolute inset-0 bg-master-bg"></div>
+         
+         {/* Moving Blobs */}
+         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-900/10 rounded-full blur-[100px] mix-blend-screen animate-blob"></div>
+         <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] bg-master-gold/5 rounded-full blur-[120px] mix-blend-screen animate-blob animate-delay-2000"></div>
+         <div className="absolute bottom-[-20%] left-[20%] w-[60%] h-[60%] bg-indigo-900/10 rounded-full blur-[100px] mix-blend-screen animate-blob animate-delay-4000"></div>
+         
+         {/* Drifting Noise Texture */}
+         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] animate-drift"></div>
+         
+         {/* Radial Gradient Overlay */}
+         <div className="absolute inset-0 bg-gradient-radial from-transparent to-master-bg/90"></div>
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -157,7 +165,7 @@ const App: React.FC = () => {
           
           {/* Hero Section */}
           <div className="text-center mb-16 relative">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-32 bg-master-gold/5 blur-3xl rounded-full pointer-events-none"></div>
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-master-gold/5 blur-3xl rounded-full pointer-events-none animate-pulse-slow"></div>
              <h2 className="text-5xl md:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-master-ivory to-master-ivory-dim mb-6 tracking-tight drop-shadow-2xl relative z-10">
                 FORGE YOUR <br/> <span className="text-master-gold bg-clip-text text-transparent bg-gradient-to-r from-master-gold via-master-gold-light to-master-gold">LEGEND</span>
              </h2>

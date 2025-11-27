@@ -701,6 +701,12 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
               <option value="Greatsword">Greatsword / Giant Blade</option>
               <option value="Dual Swords">Dual Swords / Twin Blades</option>
               <option value="Daggers">Daggers / Knives</option>
+              <option value="Kukri">Kukri</option>
+              <option value="Karambit">Karambit</option>
+              <option value="Rapier">Rapier</option>
+              <option value="Claymore">Claymore</option>
+              <option value="Butterfly Swords">Butterfly Swords</option>
+              <option value="Switchblade">Switchblade</option>
               <option value="Scythe">Scythe / Sickle</option>
               <option value="Axe">Axe / Battleaxe</option>
               <option value="Machete">Machete</option>
@@ -715,19 +721,58 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
               <option value="Spear">Spear / Lance / Glaive</option>
               <option value="Halberd">Halberd</option>
               <option value="Hammer">Hammer / Mace</option>
+              <option value="Morning Star">Morning Star</option>
+              <option value="Flail">Flail</option>
+              <option value="War Hammer">War Hammer</option>
               <option value="Nunchaku">Nunchaku / Three-Section Staff</option>
               <option value="Tonfa">Tonfa / Batons</option>
+              <option value="Sai">Sai</option>
+              <option value="Kama">Kama</option>
+              <option value="Escrima Sticks">Escrima Sticks / Kali Sticks</option>
               <option value="Club">Club / Kanabo</option>
               <option value="Meteor Hammer">Meteor Hammer</option>
             </optgroup>
 
-            <optgroup label="Ranged & Flexible">
-              <option value="Bow">Bow / Archery</option>
+            <optgroup label="Ranged (Archery & Thrown)">
+              <option value="Bow">Bow (Generic)</option>
+              <option value="Longbow">Longbow</option>
+              <option value="Compound Bow">Compound Bow</option>
+              <option value="Yumi">Yumi (Japanese Bow)</option>
               <option value="Crossbow">Crossbow</option>
-              <option value="Firearms">Firearms / Gun-Fu</option>
-              <option value="Throwing Weapons">Throwing Stars / Kunai / Knives</option>
-              <option value="Chain">Chain / Whip / Rope Dart</option>
-              <option value="Kusarigama">Kusarigama</option>
+              <option value="Hand Crossbow">Hand Crossbow</option>
+              <option value="Throwing Knives">Throwing Knives / Kunai</option>
+              <option value="Shuriken">Shuriken</option>
+              <option value="Chakram">Chakram</option>
+              <option value="Boomerang">Boomerang</option>
+              <option value="Blowgun">Blowgun</option>
+              <option value="Slingshot">Slingshot</option>
+            </optgroup>
+
+            <optgroup label="Firearms (Classic & Modern)">
+              <option value="Flintlock">Flintlock Pistol</option>
+              <option value="Musket">Musket</option>
+              <option value="Revolver">Revolver</option>
+              <option value="Pistol">Semi-Auto Pistol</option>
+              <option value="Dual Pistols">Dual Pistols</option>
+              <option value="SMG">Submachine Gun (SMG)</option>
+              <option value="Shotgun">Combat Shotgun</option>
+              <option value="Sawed-off Shotgun">Sawed-off Shotgun</option>
+              <option value="Assault Rifle">Assault Rifle</option>
+              <option value="Sniper Rifle">Sniper Rifle</option>
+              <option value="LMG">Light Machine Gun (LMG)</option>
+              <option value="Minigun">Minigun / Gatling</option>
+              <option value="Grenade Launcher">Grenade Launcher</option>
+              <option value="Rocket Launcher">Rocket Launcher</option>
+              <option value="Flamethrower">Flamethrower</option>
+            </optgroup>
+
+            <optgroup label="Sci-Fi & Tech">
+              <option value="Laser Pistol">Laser Pistol</option>
+              <option value="Plasma Rifle">Plasma Rifle</option>
+              <option value="Railgun">Railgun</option>
+              <option value="Beam Saber">Beam Saber / Laser Sword</option>
+              <option value="Energy Cannon">Energy Cannon (Arm-mounted)</option>
+              <option value="Gravity Hammer">Gravity Hammer</option>
               <option value="Energy Whip">Energy Whip</option>
             </optgroup>
 
@@ -741,6 +786,8 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
               <option value="Living Weapon">Living Weapon / Symbiote</option>
               <option value="Keyblade-style">Keyblade-style</option>
               <option value="Orb">Floating Orb / Bit</option>
+              <option value="Chain">Chain / Rope Dart</option>
+              <option value="Kusarigama">Kusarigama</option>
               <option value="Unique">Unique / Custom</option>
             </optgroup>
           </select>
