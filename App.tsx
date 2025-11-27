@@ -4,7 +4,7 @@ import CharacterCard from './components/CharacterCard';
 import Roster from './components/Roster';
 import { GeneratedCharacter, GenerationOptions, GenerationStatus } from './types';
 import { generateCharacterProfile, generateCharacterImage } from './services/geminiService';
-import { Sword } from 'lucide-react';
+import { Sword, Sparkles } from 'lucide-react';
 
 const App: React.FC = () => {
   const [character, setCharacter] = useState<GeneratedCharacter | null>(null);
@@ -118,103 +118,121 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-forge-dark text-stone-200 font-sans pb-20">
+    <div className="min-h-screen bg-master-bg text-master-ivory font-sans selection:bg-master-gold selection:text-master-bg overflow-x-hidden relative">
       
-      {/* Navbar */}
-      <nav className="border-b border-stone-800 bg-stone-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => {setCharacter(null); setStatus('idle');}}>
-            <div className="bg-gradient-to-br from-red-600 to-amber-500 p-2 rounded-lg shadow-lg shadow-red-900/20">
-              <Sword className="text-white h-6 w-6" />
+      {/* Background Ambience */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] mix-blend-screen"></div>
+         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-master-gold/5 rounded-full blur-[120px] mix-blend-screen"></div>
+         <div className="absolute inset-0 bg-gradient-radial from-transparent to-master-bg opacity-80"></div>
+         {/* Subtle Grid Pattern */}
+         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+      </div>
+
+      <div className="relative z-10 flex flex-col min-h-screen">
+      
+        {/* Cinematic Header */}
+        <header className="pt-10 pb-6 px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between border-b border-master-gold/10 pb-6">
+            <div className="flex items-center gap-4 cursor-pointer group" onClick={() => {setCharacter(null); setStatus('idle');}}>
+              <div className="w-12 h-12 bg-gradient-to-br from-master-gold to-master-gold-dim flex items-center justify-center shadow-glow-gold rotate-45 group-hover:rotate-90 transition-transform duration-500">
+                <Sword className="text-master-bg h-6 w-6 -rotate-45 group-hover:-rotate-90 transition-transform duration-500" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-serif font-black tracking-widest uppercase text-white">
+                  Martial <span className="text-master-gold">Forge</span>
+                </h1>
+                <p className="text-[10px] text-master-ivory-dim tracking-[0.3em] uppercase">Character Design System</p>
+              </div>
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-white">
-              Martial Arts <span className="text-forge-accent">Forge</span>
-            </h1>
+            
+            <div className="hidden md:flex items-center gap-6">
+               <span className="text-xs font-serif text-master-ivory-dim tracking-widest uppercase opacity-50">V 2.5.0</span>
+            </div>
           </div>
-          <div className="text-sm text-stone-500 hidden sm:block">
-            Powered by Gemini 2.5
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+          
+          {/* Hero Section */}
+          <div className="text-center mb-16 relative">
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-32 bg-master-gold/5 blur-3xl rounded-full pointer-events-none"></div>
+             <h2 className="text-5xl md:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-master-ivory to-master-ivory-dim mb-6 tracking-tight drop-shadow-2xl relative z-10">
+                FORGE YOUR <br/> <span className="text-master-gold bg-clip-text text-transparent bg-gradient-to-r from-master-gold via-master-gold-light to-master-gold">LEGEND</span>
+             </h2>
+             <p className="text-lg text-master-ivory-dim max-w-2xl mx-auto font-light leading-relaxed tracking-wide">
+                The ultimate character synthesis engine. Create cinema-quality martial arts concepts 
+                with deep lore, combat analytics, and high-fidelity visual references.
+             </p>
           </div>
-        </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        
-        {/* Intro */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
-            Design Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-forge-accent to-red-500">Ultimate Fighter</span>
-          </h2>
-          <p className="text-lg text-stone-400 max-w-2xl mx-auto">
-            Generate production-ready character concepts with detailed 3D modeling specifications, 
-            unique fighting styles, and visual references.
-          </p>
-        </div>
-
-        {/* Controls */}
-        <Controls 
-          options={options} 
-          setOptions={setOptions} 
-          onGenerate={handleGenerate}
-          isGenerating={status === 'generating_text' || status === 'generating_image'}
-        />
-
-        {/* Loading / Status Message */}
-        {status !== 'idle' && status !== 'complete' && status !== 'error' && (
-          <div className="text-center py-8 animate-pulse">
-            <p className="text-forge-accent font-medium text-lg">
-              {status === 'generating_text' ? 'Analyzing fighting styles & weaving backstory...' : 'Rendering concept art reference...'}
-            </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+             
+             {/* Controls Column */}
+             <div className="lg:col-span-12 xl:col-span-10 xl:col-start-2">
+                <Controls 
+                  options={options} 
+                  setOptions={setOptions} 
+                  onGenerate={handleGenerate}
+                  isGenerating={status === 'generating_text' || status === 'generating_image'}
+                />
+             </div>
           </div>
-        )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-900/20 border border-red-800/50 text-red-300 p-4 rounded-lg text-center mb-8">
-            {error}
-          </div>
-        )}
+          {/* Loading Indicator */}
+          {status !== 'idle' && status !== 'complete' && status !== 'error' && (
+            <div className="flex flex-col items-center justify-center py-12 animate-pulse">
+              <div className="w-16 h-16 border-4 border-master-surface border-t-master-gold rounded-full animate-spin mb-4 shadow-glow-gold"></div>
+              <p className="text-master-gold font-serif tracking-widest text-sm uppercase">
+                {status === 'generating_text' ? 'Synthesizing Profile Data...' : 'Rendering Visual Asset...'}
+              </p>
+            </div>
+          )}
 
-        {/* Result Area */}
-        {character && (
-          <div className="space-y-6">
-             <CharacterCard 
-                character={character} 
-                isSaved={isCurrentCharacterSaved}
-                onSave={handleSaveCharacter}
-                onRemove={handleRemoveCharacter}
+          {/* Error Message */}
+          {error && (
+            <div className="max-w-2xl mx-auto bg-red-900/20 border border-red-500/30 text-red-200 p-6 rounded-sm text-center mb-12 backdrop-blur-sm">
+              <h4 className="font-serif font-bold uppercase tracking-wider mb-2 text-red-400">System Error</h4>
+              <p>{error}</p>
+            </div>
+          )}
+
+          {/* Result Area */}
+          {character && (
+            <div className="space-y-6 lg:col-span-12 xl:col-span-10 xl:col-start-2 max-w-5xl mx-auto">
+               <CharacterCard 
+                  character={character} 
+                  isSaved={isCurrentCharacterSaved}
+                  onSave={handleSaveCharacter}
+                  onRemove={handleRemoveCharacter}
+               />
+            </div>
+          )}
+
+          {/* Saved Roster */}
+          <div className="max-w-6xl mx-auto">
+             <Roster 
+               characters={savedCharacters} 
+               onSelect={(char) => {
+                  setCharacter(char);
+                  setStatus('complete');
+                  window.scrollTo({ top: 400, behavior: 'smooth' });
+               }} 
+               onRemove={handleRemoveCharacter} 
              />
           </div>
-        )}
 
-        {/* Empty State */}
-        {!character && status === 'idle' && savedCharacters.length === 0 && (
-          <div className="text-center py-20 border-2 border-dashed border-stone-800 rounded-xl bg-stone-900/20">
-            <div className="opacity-30 flex flex-col items-center text-stone-500">
-              <Sword size={64} className="mb-4" />
-              <p className="text-xl font-semibold">Ready to Forge</p>
-              <p className="text-sm mt-2">Select options above and click Generate</p>
-            </div>
-          </div>
-        )}
+        </main>
 
-        {/* Saved Roster */}
-        <Roster 
-          characters={savedCharacters} 
-          onSelect={(char) => {
-             setCharacter(char);
-             setStatus('complete'); // Show the card
-             window.scrollTo({ top: 400, behavior: 'smooth' }); // Scroll to card
-          }} 
-          onRemove={handleRemoveCharacter} 
-        />
-
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-stone-800 mt-20 py-8 text-center text-stone-600 text-sm">
-        <p>&copy; {new Date().getFullYear()} Martial Arts Character Forge. Built with React & Gemini.</p>
-      </footer>
+        {/* Footer */}
+        <footer className="border-t border-master-gold/10 mt-auto py-12 text-center relative z-10 bg-master-bg">
+          <p className="text-master-ivory-dim text-xs font-serif tracking-[0.2em] uppercase opacity-60">
+             &copy; {new Date().getFullYear()} Martial Forge / Gemini Core System
+          </p>
+        </footer>
+      
+      </div>
     </div>
   );
 };

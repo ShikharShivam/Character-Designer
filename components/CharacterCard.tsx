@@ -10,26 +10,27 @@ interface CharacterCardProps {
 }
 
 const ColorSwatch: React.FC<{ color: string; label: string }> = ({ color, label }) => (
-  <div className="flex flex-col items-center gap-1">
+  <div className="flex flex-col items-center gap-1.5 group">
     <div 
-      className="w-12 h-12 rounded-full border-2 border-stone-600 shadow-md" 
+      className="w-10 h-10 rounded-full border border-master-surface-light shadow-lg transition-transform group-hover:scale-110 relative" 
       style={{ backgroundColor: color }}
       title={color}
-    />
-    <span className="text-xs text-stone-400 font-mono">{label}</span>
-    <span className="text-[10px] text-stone-500 uppercase">{color}</span>
+    >
+      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/20 to-transparent pointer-events-none"></div>
+    </div>
+    <span className="text-[10px] text-master-ivory-dim font-serif tracking-widest">{label}</span>
   </div>
 );
 
-const StatBar: React.FC<{ label: string; value: number; colorClass?: string }> = ({ label, value, colorClass = "bg-forge-accent" }) => (
-  <div className="mb-2">
-    <div className="flex justify-between text-xs uppercase font-bold text-stone-400 mb-1">
+const StatBar: React.FC<{ label: string; value: number; colorClass?: string }> = ({ label, value, colorClass = "bg-master-gold" }) => (
+  <div className="mb-3">
+    <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest text-master-ivory-dim mb-1.5">
       <span>{label}</span>
-      <span>{value}/10</span>
+      <span className="text-master-gold">{value} / 10</span>
     </div>
-    <div className="h-2 bg-stone-800 rounded-full overflow-hidden border border-stone-700">
+    <div className="h-1.5 bg-master-surface rounded-full overflow-hidden border border-master-surface-light">
       <div 
-        className={`h-full ${colorClass} transition-all duration-1000 ease-out`} 
+        className={`h-full ${colorClass} shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-all duration-1000 ease-out`} 
         style={{ width: `${value * 10}%` }}
       />
     </div>
@@ -38,322 +39,278 @@ const StatBar: React.FC<{ label: string; value: number; colorClass?: string }> =
 
 const CharacterCard: React.FC<CharacterCardProps> = ({ character, isSaved = false, onSave, onRemove }) => {
   return (
-    <div className="w-full bg-forge-card rounded-xl border border-stone-700 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 transition-all ease-in-out hover:scale-[1.01] hover:shadow-amber-900/20 hover:border-stone-600">
+    <div className="w-full glass-panel border-master-gold/30 rounded-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-700 relative">
       
-      {/* Header with Nationality Flag styled text */}
-      <div className="bg-stone-900/50 p-6 border-b border-stone-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-forge-accent mb-1">
-            <Flag size={16} />
-            <span className="text-sm font-semibold tracking-wider uppercase">{character.nationality}</span>
-            {character.alignment && (
-               <>
-                <span className="text-stone-600">•</span>
-                <span className="text-xs text-stone-400 uppercase tracking-wide flex items-center gap-1">
-                  <Star size={12} className="text-forge-accent" />
-                  {character.alignment}
-                </span>
-               </>
-            )}
+      {/* Cinematic Header */}
+      <div className="relative p-8 md:p-10 border-b border-master-gold/20 overflow-hidden">
+        {/* Background glow for header */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-master-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div>
+            <div className="flex items-center gap-3 text-master-gold mb-2">
+              <span className="text-xs font-serif font-bold tracking-[0.2em] uppercase border-b border-master-gold/50 pb-0.5">{character.nationality}</span>
+              {character.alignment && (
+                 <>
+                  <span className="text-master-gold/50 text-[10px]">•</span>
+                  <span className="text-xs text-master-ivory-dim font-serif uppercase tracking-wider flex items-center gap-1.5">
+                    {character.alignment}
+                  </span>
+                 </>
+              )}
+            </div>
+            <h2 className="text-4xl md:text-5xl font-serif font-black text-master-ivory tracking-tight leading-tight uppercase drop-shadow-lg">
+              {character.name}
+            </h2>
+            <div className="flex flex-wrap items-center gap-4 text-master-ivory-dim text-xs font-medium mt-3 tracking-wide">
+               <span className="flex items-center gap-1.5">
+                 <Dna size={12} className="text-master-gold" />
+                 {character.species}
+               </span>
+               <span className="w-1 h-1 bg-master-gold/50 rounded-full"></span>
+               <span className="flex items-center gap-1.5">
+                 <Flame size={12} className="text-master-gold" />
+                 {character.martialArtStyle}
+               </span>
+               <span className="w-1 h-1 bg-master-gold/50 rounded-full"></span>
+               <span>{character.ageGroup} ({character.age})</span>
+            </div>
           </div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">{character.name}</h2>
-          <div className="flex flex-wrap items-center gap-3 text-stone-400 text-sm mt-1">
-            <span className="bg-stone-800 px-2 py-0.5 rounded text-xs text-white border border-stone-700">{character.gender}</span>
-            <span className="hidden sm:inline">•</span>
-             <span className="bg-stone-800 px-2 py-0.5 rounded text-xs text-white border border-stone-700 flex items-center gap-1">
-               <Dna size={10} className="text-purple-400" />
-               {character.species}
-            </span>
-            <span className="hidden sm:inline">•</span>
-            <span className="bg-stone-800 px-2 py-0.5 rounded text-xs text-white border border-stone-700 flex items-center gap-1">
-               <Flame size={10} className="text-red-400" />
-               {character.martialArtStyle}
-            </span>
-            <span className="hidden sm:inline">•</span>
-            <span>Age: {character.age} <span className="text-stone-500 text-xs">({character.ageGroup})</span></span>
-          </div>
-        </div>
-        <div className="flex gap-2">
+          
+          <div className="flex gap-3">
              <button 
                 onClick={() => navigator.clipboard.writeText(JSON.stringify(character, null, 2))}
-                className="text-xs bg-stone-700 hover:bg-stone-600 text-stone-300 px-3 py-2 rounded-lg transition-colors flex items-center gap-1 font-medium border border-stone-600"
-                title="Copy JSON Data"
+                className="text-xs bg-master-surface/50 hover:bg-master-surface text-master-gold border border-master-gold/30 hover:border-master-gold px-4 py-2 transition-all font-serif tracking-wider uppercase flex items-center gap-2"
              >
-                <Copy size={16}/> <span className="hidden sm:inline">JSON</span>
+                <Copy size={14}/> JSON
              </button>
              
              {isSaved ? (
                 <button 
                   onClick={() => onRemove?.(character.id)}
-                  className="text-xs bg-red-900/30 border border-red-800 text-red-400 px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 font-bold hover:bg-red-900/50 hover:text-red-300 group"
+                  className="text-xs bg-red-900/20 border border-red-500/50 text-red-400 px-5 py-2 transition-all font-serif tracking-wider uppercase flex items-center gap-2 hover:bg-red-900/40 group"
                 >
-                  <span className="group-hover:hidden flex items-center gap-1.5"><Check size={16} /> Saved</span>
-                  <span className="hidden group-hover:flex items-center gap-1.5"><Trash2 size={16} /> Remove</span>
+                  <span className="group-hover:hidden flex items-center gap-2"><Check size={14} /> Saved</span>
+                  <span className="hidden group-hover:flex items-center gap-2"><Trash2 size={14} /> Remove</span>
                 </button>
              ) : (
                 <button 
                   onClick={() => onSave?.(character)}
-                  className="text-xs bg-forge-accent hover:bg-forge-accent-hover text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 font-bold shadow-lg shadow-amber-500/10"
+                  className="text-xs bg-master-gold text-master-bg px-5 py-2 transition-all font-serif font-bold tracking-wider uppercase flex items-center gap-2 hover:bg-master-gold-light shadow-glow-gold"
                 >
-                  <Bookmark size={16} /> Save Fighter
+                  <Bookmark size={14} /> Save
                 </button>
              )}
+          </div>
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row">
-        {/* Left Column: Visuals & Core Stats */}
-        <div className="lg:w-1/3 p-6 bg-stone-900/30 border-r border-stone-700 flex flex-col gap-6">
-          {/* Character Image */}
-          <div className="aspect-[3/4] w-full bg-stone-800 rounded-lg overflow-hidden border border-stone-600 relative group shadow-inner">
+        {/* Left Column: Visuals */}
+        <div className="lg:w-[40%] bg-master-bg/30 border-r border-master-gold/10 p-8 flex flex-col gap-8">
+          {/* Character Image Frame */}
+          <div className="relative aspect-[3/4] w-full rounded-sm overflow-hidden border border-master-surface-light group shadow-2xl">
             {character.imageUrl ? (
               <img 
                 src={character.imageUrl} 
                 alt={character.name} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-stone-600 gap-2">
-                <User size={48} className="opacity-20" />
-                <span className="text-sm font-medium">No visual reference generated</span>
+              <div className="w-full h-full flex flex-col items-center justify-center text-master-surface-light bg-master-surface gap-4">
+                <User size={64} className="opacity-20" />
+                <span className="text-xs font-serif tracking-widest uppercase opacity-50">Visual data unavailable</span>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 to-transparent opacity-60"></div>
             
-            {/* Element Badge Overlay */}
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-master-bg via-transparent to-transparent opacity-60"></div>
+            
+            {/* Element Badge */}
             {character.element && character.element !== "None" && character.element !== "Physical" && (
-              <div className="absolute bottom-4 left-4 bg-stone-900/90 backdrop-blur-sm border border-stone-600 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-lg">
-                <Zap size={12} className="text-forge-accent" />
-                {character.element} Affinity
+              <div className="absolute bottom-6 left-6 backdrop-blur-md bg-master-bg/60 border border-master-gold/30 text-master-ivory px-4 py-1.5 rounded-full text-xs font-bold font-serif tracking-wider uppercase flex items-center gap-2 shadow-lg">
+                <Zap size={14} className="text-master-gold" />
+                {character.element}
               </div>
             )}
           </div>
 
           {/* Color Palette */}
           <div>
-            <div className="flex items-center gap-2 mb-3 text-stone-300 font-semibold">
-              <Palette size={18} className="text-forge-accent" />
-              <h3>Color Palette</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="h-px w-8 bg-master-gold/50"></span>
+              <h3 className="text-xs font-serif font-bold tracking-[0.2em] uppercase text-master-gold">Color Palette</h3>
             </div>
-            <div className="flex gap-4 justify-start">
-              <ColorSwatch color={character.colorPalette.primary} label="Pri" />
-              <ColorSwatch color={character.colorPalette.secondary} label="Sec" />
-              <ColorSwatch color={character.colorPalette.accent} label="Acc" />
+            <div className="flex gap-6 justify-center p-4 bg-master-surface/40 border border-master-surface-light rounded-sm">
+              <ColorSwatch color={character.colorPalette.primary} label="PRI" />
+              <ColorSwatch color={character.colorPalette.secondary} label="SEC" />
+              <ColorSwatch color={character.colorPalette.accent} label="ACC" />
             </div>
           </div>
         </div>
 
-        {/* Right Column: Detailed Info */}
-        <div className="lg:w-2/3 p-6 space-y-8">
+        {/* Right Column: Data */}
+        <div className="lg:w-[60%] p-8 lg:p-10 space-y-10">
           
-          {/* Build, Stats & Appearance Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             
             {/* Physique */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 text-stone-300 font-semibold">
-                <User size={18} className="text-forge-accent" />
-                <h3>Physique & Build</h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-master-gold/10 pb-2">
+                <User size={16} className="text-master-gold" />
+                <h3 className="text-sm font-serif font-bold tracking-widest uppercase text-master-ivory">Physique</h3>
               </div>
-              <p className="text-stone-400 text-sm leading-relaxed mb-3">
-                <span className="text-white font-medium">{character.build.type}</span> - {character.build.description}
+              <p className="text-master-ivory-dim text-sm leading-relaxed font-light">
+                <strong className="text-master-ivory font-medium block mb-1">{character.build.type}</strong>
+                {character.build.description}
               </p>
-              <div className="flex gap-4 text-xs text-stone-400 bg-stone-800/50 p-2 rounded border border-stone-700/50">
-                 <div className="flex items-center gap-1">
-                   <Ruler size={14} /> 
+              <div className="grid grid-cols-2 gap-2 text-xs text-master-gold bg-master-surface/50 p-3 rounded-sm border border-master-surface-light">
+                 <div className="flex items-center gap-2">
+                   <Ruler size={12} className="opacity-70" /> 
                    <span>{character.appearance?.height || 'N/A'}</span>
                  </div>
-                 <div className="h-4 w-px bg-stone-600"></div>
-                 <div className="flex items-center gap-1">
-                   <Weight size={14} /> 
+                 <div className="flex items-center gap-2">
+                   <Weight size={12} className="opacity-70" /> 
                    <span>{character.appearance?.weight || 'N/A'}</span>
                  </div>
-                 {character.appearance?.skinTone && (
-                   <>
-                     <div className="h-4 w-px bg-stone-600"></div>
-                     <span>{character.appearance.skinTone} Skin</span>
-                   </>
-                 )}
               </div>
             </div>
 
-            {/* Facial Features (New) */}
-            <div>
-               <div className="flex items-center gap-2 mb-2 text-stone-300 font-semibold">
-                 <ScanFace size={18} className="text-forge-accent" />
-                 <h3>Facial Features</h3>
+            {/* Facial Features */}
+            <div className="space-y-4">
+               <div className="flex items-center gap-3 border-b border-master-gold/10 pb-2">
+                 <ScanFace size={16} className="text-master-gold" />
+                 <h3 className="text-sm font-serif font-bold tracking-widest uppercase text-master-ivory">Visage</h3>
                </div>
-               <div className="grid grid-cols-2 gap-y-2 gap-x-1 text-sm">
+               <div className="space-y-2 text-sm">
                   {character.appearance?.faceType && (
-                     <div className="flex items-start gap-1.5 col-span-2">
-                       <User size={14} className="text-stone-500 mt-0.5" />
-                       <span className="text-stone-400"><span className="text-stone-500 text-xs uppercase mr-1">Face:</span>{character.appearance.faceType}</span>
+                     <div className="flex justify-between items-center border-b border-dashed border-master-surface-light pb-1">
+                       <span className="text-master-ivory-dim text-xs uppercase tracking-wider">Structure</span>
+                       <span className="text-master-ivory">{character.appearance.faceType}</span>
                      </div>
                   )}
                   {character.appearance?.eyeColor && (
-                     <div className="flex items-start gap-1.5">
-                       <Eye size={14} className="text-stone-500 mt-0.5" />
-                       <span className="text-stone-400"><span className="text-stone-500 text-xs uppercase mr-1">Eyes:</span>{character.appearance.eyeColor} {character.appearance.eyeShape ? `(${character.appearance.eyeShape})` : ''}</span>
+                     <div className="flex justify-between items-center border-b border-dashed border-master-surface-light pb-1">
+                       <span className="text-master-ivory-dim text-xs uppercase tracking-wider">Eyes</span>
+                       <span className="text-master-ivory">{character.appearance.eyeColor}</span>
                      </div>
                   )}
                   {character.appearance?.hairColor && (
-                     <div className="flex items-start gap-1.5">
-                       <Scissors size={14} className="text-stone-500 mt-0.5" />
-                       <span className="text-stone-400"><span className="text-stone-500 text-xs uppercase mr-1">Hair:</span>{character.appearance.hairColor} {character.appearance.hairStyle ? `(${character.appearance.hairStyle})` : ''}</span>
+                     <div className="flex justify-between items-center border-b border-dashed border-master-surface-light pb-1">
+                       <span className="text-master-ivory-dim text-xs uppercase tracking-wider">Hair</span>
+                       <span className="text-master-ivory">{character.appearance.hairColor} / {character.appearance.hairStyle}</span>
                      </div>
                   )}
-                  {character.appearance?.facialHair && character.appearance.facialHair !== 'None' && (
-                     <div className="flex items-start gap-1.5 col-span-2">
-                        <span className="text-stone-500 text-xs uppercase font-bold w-4 text-center">FH</span>
-                       <span className="text-stone-400">{character.appearance.facialHair}</span>
+                  {character.appearance?.skinTone && (
+                     <div className="flex justify-between items-center pb-1">
+                       <span className="text-master-ivory-dim text-xs uppercase tracking-wider">Complexion</span>
+                       <span className="text-master-ivory">{character.appearance.skinTone}</span>
                      </div>
                   )}
                </div>
             </div>
+          </div>
+
+          {/* Stance Section - Heroic Display */}
+          <div className="relative overflow-hidden rounded-sm border border-master-gold/20">
+             <div className="absolute inset-0 bg-master-surface/80"></div>
+             <div className="relative p-6 z-10">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <Activity size={18} className="text-master-gold" />
+                        <h3 className="text-lg font-serif font-bold tracking-widest uppercase text-master-ivory">{character.fightingStance.name}</h3>
+                    </div>
+                    <span className="text-[10px] font-bold text-master-bg bg-master-gold px-2 py-1 uppercase tracking-wider rounded-sm">
+                        {character.fightingStance.type}
+                    </span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <p className="text-master-ivory-dim text-sm italic mb-4 font-light leading-relaxed border-l-2 border-master-gold/30 pl-4">
+                            "{character.fightingStance.description}"
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {character.fightingStance.keyFeatures.map((feat, i) => (
+                                <span key={i} className="text-[10px] bg-master-bg text-master-gold border border-master-gold/20 px-2 py-1 uppercase tracking-wide">
+                                    {feat}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="bg-master-bg/50 p-4 rounded-sm border border-master-surface-light">
+                       {character.fightingStance.stats && (
+                          <>
+                             <StatBar label="Offense" value={character.fightingStance.stats.offense} />
+                             <StatBar label="Defense" value={character.fightingStance.stats.defense} />
+                             <StatBar label="Speed" value={character.fightingStance.stats.speed} />
+                             <StatBar label="Reach" value={character.fightingStance.stats.reach} />
+                          </>
+                       )}
+                    </div>
+                </div>
+             </div>
+          </div>
             
-            {/* Weapon Details */}
+          {/* Equipment Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {/* Weapon */}
             <div>
-              <div className="flex items-center gap-2 mb-2 text-stone-300 font-semibold">
-                <Sword size={18} className="text-forge-accent" />
-                <h3>Weapon of Choice</h3>
+              <div className="flex items-center gap-3 border-b border-master-gold/10 pb-2 mb-4">
+                <Sword size={16} className="text-master-gold" />
+                <h3 className="text-sm font-serif font-bold tracking-widest uppercase text-master-ivory">Weaponry</h3>
               </div>
-              <p className="text-stone-400 text-sm leading-relaxed mb-2">
-                <span className="text-white font-medium">{character.weapon.name}</span>
-                <span className="block text-xs mt-1 text-stone-500">{character.weapon.description}</span>
-              </p>
-              {(character.weapon.color || character.weapon.material) && (
-                 <div className="flex gap-2 mt-2">
+              <div className="bg-master-surface/30 p-4 border border-master-surface-light/50 rounded-sm">
+                 <h4 className="text-master-ivory font-serif font-bold text-lg mb-1">{character.weapon.name}</h4>
+                 <p className="text-master-ivory-dim text-xs mb-3">{character.weapon.description}</p>
+                 <div className="flex gap-2">
                     {character.weapon.material && (
-                      <span className="text-[10px] uppercase font-bold bg-stone-800 text-stone-400 px-2 py-0.5 rounded border border-stone-700">
+                      <span className="text-[10px] uppercase font-bold text-master-gold bg-master-surface px-2 py-1 border border-master-gold/20">
                          {character.weapon.material}
                       </span>
                     )}
-                    {character.weapon.color && (
-                      <span className="text-[10px] uppercase font-bold bg-stone-800 text-stone-400 px-2 py-0.5 rounded border border-stone-700 flex items-center gap-1">
-                         <span className="w-2 h-2 rounded-full inline-block border border-stone-600" style={{backgroundColor: character.weapon.color}}></span>
-                         {character.weapon.color}
+                 </div>
+              </div>
+            </div>
+
+            {/* Outfit */}
+            <div>
+               <div className="flex items-center gap-3 border-b border-master-gold/10 pb-2 mb-4">
+                  <Box size={16} className="text-master-gold" />
+                  <h3 className="text-sm font-serif font-bold tracking-widest uppercase text-master-ivory">Attire</h3>
+               </div>
+               <div className="bg-master-surface/30 p-4 border border-master-surface-light/50 rounded-sm">
+                  <h4 className="text-master-ivory font-serif font-bold text-lg mb-1">{character.outfit.name}</h4>
+                  <p className="text-master-ivory-dim text-xs mb-3">{character.outfit.description}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {character.outfit.materials.map((mat, i) => (
+                      <span key={i} className="text-[10px] text-master-ivory-dim bg-master-surface px-2 py-0.5 border border-master-surface-light">
+                        {mat}
                       </span>
-                    )}
-                 </div>
-              )}
-            </div>
-
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-2 text-stone-300 font-semibold">
-                <Shield size={18} className="text-forge-accent" />
-                <h3>Distinguishing Marks</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {character.bodyMarkings.map((mark, idx) => (
-                  <span key={idx} className="bg-stone-800 text-stone-300 text-xs px-2 py-1 rounded border border-stone-600 shadow-sm">
-                    {mark}
-                  </span>
-                ))}
-                {character.bodyMarkings.length === 0 && <span className="text-stone-500 text-sm">None</span>}
-              </div>
-            </div>
-          </div>
-
-          {/* Fighting Stance & Stats (Improved Visualization) */}
-          <div>
-            <div className="flex items-center gap-2 mb-3 text-stone-300 font-semibold">
-              <Activity size={18} className="text-forge-accent" />
-              <h3>Fighting Style & Stance</h3>
-            </div>
-            <div className="bg-stone-800/40 p-5 rounded-lg border border-stone-700 shadow-inner">
-               <div className="flex items-center justify-between mb-3">
-                 <h4 className="text-white font-medium text-lg">{character.fightingStance.name}</h4>
-                 <div className="flex gap-2">
-                    {character.fightingStance.type && (
-                         <span className="text-xs text-white bg-stone-700 border border-stone-600 px-2 py-0.5 rounded uppercase tracking-wider font-bold shadow-sm">
-                            {character.fightingStance.type}
-                         </span>
-                    )}
-                 </div>
-               </div>
-               
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                  <div>
-                    <p className="text-stone-400 text-sm mb-3 italic">{character.fightingStance.description}</p>
-                    <ul className="list-disc list-inside text-sm text-stone-400 space-y-1">
-                      {character.fightingStance.keyFeatures.map((feat, i) => (
-                        <li key={i}>{feat}</li>
-                      ))}
-                    </ul>
+                    ))}
                   </div>
-                  
-                  {/* Visual Stats */}
-                  {character.fightingStance.stats && (
-                    <div className="bg-stone-900/50 p-4 rounded-lg border border-stone-700/50">
-                       <StatBar label="Offense" value={character.fightingStance.stats.offense} colorClass="bg-red-600" />
-                       <StatBar label="Defense" value={character.fightingStance.stats.defense} colorClass="bg-blue-600" />
-                       <StatBar label="Speed" value={character.fightingStance.stats.speed} colorClass="bg-amber-500" />
-                       <StatBar label="Reach" value={character.fightingStance.stats.reach} colorClass="bg-emerald-600" />
-                    </div>
-                  )}
                </div>
             </div>
           </div>
 
-          {/* Outfit */}
-          <div>
-            <div className="flex items-center gap-2 mb-3 text-stone-300 font-semibold">
-              <Box size={18} className="text-forge-accent" />
-              <h3>Primary Outfit</h3>
-            </div>
-            <div className="bg-stone-800/40 p-4 rounded-lg border border-stone-700 mb-3 shadow-inner">
-               <h4 className="text-white font-medium mb-1">{character.outfit.name}</h4>
-               <p className="text-stone-400 text-sm">{character.outfit.description}</p>
-            </div>
-            
-            {/* Primary Materials */}
-            <div className="flex items-center gap-2 mb-2 text-xs text-stone-500 uppercase tracking-wide">
-              <Layers size={14} className="text-forge-accent" />
-              <span>Materials</span>
-            </div>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {character.outfit.materials.map((mat, i) => (
-                <span key={i} className="bg-stone-800 text-stone-300 text-xs px-2 py-1 rounded border border-stone-600 shadow-sm">
-                  {mat}
-                </span>
-              ))}
-              {character.outfit.materials.length === 0 && <span className="text-stone-500 text-sm">None listed</span>}
-            </div>
-          </div>
-
-          {/* Alternate Outfits */}
+          {/* Alternate Loadouts */}
           {character.alternateOutfits && character.alternateOutfits.length > 0 && (
-            <div className="mt-4">
-              <div className="flex items-center gap-2 mb-3 text-stone-300 font-semibold">
-                <Layers size={18} className="text-forge-accent" />
-                <h3>Alternate Loadouts</h3>
+            <div className="border-t border-master-gold/10 pt-6">
+              <div className="flex items-center gap-3 mb-6">
+                <Layers size={16} className="text-master-gold" />
+                <h3 className="text-sm font-serif font-bold tracking-widest uppercase text-master-ivory">Alternate Loadouts</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {character.alternateOutfits.map((outfit, idx) => (
-                  <div key={idx} className="bg-stone-800/30 rounded-lg border border-stone-700/60 p-4 flex flex-col h-full hover:border-stone-500 hover:bg-stone-800/50 transition-all shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-white font-medium text-sm truncate pr-2" title={outfit.name}>{outfit.name}</h4>
-                      <span className="text-[10px] text-stone-500 font-mono bg-stone-900 px-1.5 py-0.5 rounded border border-stone-800">0{idx + 1}</span>
+                  <div key={idx} className="bg-master-surface/20 border border-master-surface-light/50 p-4 hover:border-master-gold/30 hover:bg-master-surface/40 transition-all group">
+                    <div className="flex justify-between items-start mb-2">
+                        <span className="text-[10px] font-serif text-master-gold opacity-50 group-hover:opacity-100 transition-opacity">NO. 0{idx + 1}</span>
                     </div>
-                    
-                    <p className="text-stone-400 text-xs mb-4 line-clamp-3 flex-grow leading-relaxed">
+                    <h4 className="text-master-ivory font-medium text-sm mb-2 group-hover:text-master-gold transition-colors">{outfit.name}</h4>
+                    <p className="text-master-ivory-dim text-xs leading-relaxed mb-3 line-clamp-3">
                       {outfit.description}
                     </p>
-                    
-                    <div className="border-t border-stone-700/50 pt-3 mt-auto">
-                      <div className="flex flex-wrap gap-1.5">
-                        {outfit.materials.slice(0, 3).map((m, i) => (
-                          <span key={i} className="bg-stone-900 text-stone-400 text-[10px] px-1.5 py-0.5 rounded border border-stone-700/50">
-                            {m}
-                          </span>
-                        ))}
-                        {outfit.materials.length > 3 && (
-                          <span className="text-[10px] text-stone-500 py-0.5 px-1 bg-stone-900/50 rounded border border-transparent">
-                            +{outfit.materials.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -361,13 +318,13 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, isSaved = fals
           )}
 
            {/* Backstory */}
-           <div>
-            <div className="flex items-center gap-2 mb-2 text-stone-300 font-semibold">
-              <History size={18} className="text-forge-accent" />
-              <h3>Brief Backstory</h3>
+           <div className="bg-master-gold/5 border-l-2 border-master-gold p-6 relative">
+             <History size={48} className="absolute right-4 top-4 text-master-gold opacity-10" />
+            <div className="flex items-center gap-3 mb-3">
+              <h3 className="text-sm font-serif font-bold tracking-widest uppercase text-master-gold">Origin & Lore</h3>
             </div>
-            <p className="text-stone-400 text-sm leading-relaxed italic border-l-2 border-forge-accent pl-4">
-              "{character.backstory}"
+            <p className="text-master-ivory text-sm leading-7 font-light relative z-10">
+              {character.backstory}
             </p>
           </div>
 
