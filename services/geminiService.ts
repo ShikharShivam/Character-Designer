@@ -18,6 +18,20 @@ const CHARACTER_SCHEMA = {
     alignment: { type: Type.STRING, description: "e.g. Hero, Villain, Anti-Hero, Neutral" },
     element: { type: Type.STRING, description: "Primary elemental affinity or power source (e.g. Fire, Tech, Physical)" },
     martialArtStyle: { type: Type.STRING, description: "The primary martial art style used by the character (e.g. Kung Fu, Muay Thai, etc.)" },
+    appearance: {
+      type: Type.OBJECT,
+      properties: {
+        faceType: { type: Type.STRING },
+        skinTone: { type: Type.STRING },
+        eyeShape: { type: Type.STRING },
+        eyeColor: { type: Type.STRING },
+        hairStyle: { type: Type.STRING },
+        hairColor: { type: Type.STRING },
+        facialHair: { type: Type.STRING },
+        height: { type: Type.STRING },
+        weight: { type: Type.STRING },
+      }
+    },
     build: {
       type: Type.OBJECT,
       properties: {
@@ -31,6 +45,8 @@ const CHARACTER_SCHEMA = {
         name: { type: Type.STRING },
         type: { type: Type.STRING },
         description: { type: Type.STRING },
+        color: { type: Type.STRING },
+        material: { type: Type.STRING },
       },
     },
     outfit: {
@@ -74,16 +90,27 @@ const CHARACTER_SCHEMA = {
       type: Type.OBJECT,
       properties: {
         name: { type: Type.STRING },
+        type: { type: Type.STRING, description: "e.g. Aggressive, Defensive, Counter-based, Fluid, Rigid" },
         description: { type: Type.STRING },
         keyFeatures: {
           type: Type.ARRAY,
           items: { type: Type.STRING },
         },
+        stats: {
+          type: Type.OBJECT,
+          description: "Rank capabilities from 1 to 10",
+          properties: {
+            offense: { type: Type.INTEGER },
+            defense: { type: Type.INTEGER },
+            speed: { type: Type.INTEGER },
+            reach: { type: Type.INTEGER },
+          }
+        }
       },
     },
     backstory: { type: Type.STRING },
   },
-  required: ["name", "species", "gender", "nationality", "age", "ageGroup", "alignment", "element", "martialArtStyle", "build", "weapon", "outfit", "colorPalette", "fightingStance"],
+  required: ["name", "species", "gender", "nationality", "age", "ageGroup", "alignment", "element", "martialArtStyle", "appearance", "build", "weapon", "outfit", "colorPalette", "fightingStance"],
 };
 
 export const generateCharacterProfile = async (options: GenerationOptions): Promise<CharacterData> => {
@@ -119,6 +146,14 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     ? `Weapon Preference: ${options.weapon}` 
     : "Weapon: Any or Unarmed";
     
+  const weaponMaterialPrompt = options.weaponMaterial && options.weaponMaterial !== 'Random'
+    ? `Weapon Material: ${options.weaponMaterial}`
+    : "";
+
+  const outfitStylePrompt = options.outfitStyle && options.outfitStyle !== 'Random'
+    ? `Outfit Style Preference: ${options.outfitStyle}`
+    : "";
+
   const martialArtPrompt = options.martialArtStyle && options.martialArtStyle !== 'Random'
     ? `Martial Arts Style: ${options.martialArtStyle}`
     : "Martial Arts Style: Select a distinct real-world or believable fictional martial art";
@@ -135,6 +170,18 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     ? `Elemental Affinity / Power Source: ${options.element}`
     : "Elemental Affinity: Any or None (Physical)";
 
+  // Physical Appearance Prompts
+  const skinTonePrompt = options.skinTone && options.skinTone !== 'Random' ? `Skin Tone: ${options.skinTone}` : "";
+  const eyeShapePrompt = options.eyeShape && options.eyeShape !== 'Random' ? `Eye Shape: ${options.eyeShape}` : "";
+  const faceTypePrompt = options.faceType && options.faceType !== 'Random' ? `Face Structure: ${options.faceType}` : "";
+  const hairStylePrompt = options.hairStyle && options.hairStyle !== 'Random' ? `Hair Style: ${options.hairStyle}` : "";
+  const hairColorPrompt = options.hairColor && options.hairColor !== 'Random' ? `Hair Color: ${options.hairColor}` : "";
+  const eyeColorPrompt = options.eyeColor && options.eyeColor !== 'Random' ? `Eye Color: ${options.eyeColor}` : "";
+  const heightPrompt = options.height && options.height !== 'Random' ? `Height: ${options.height}` : "";
+  const weightPrompt = options.weight && options.weight !== 'Random' ? `Weight: ${options.weight}` : "";
+  const facialHairPrompt = options.facialHair && options.facialHair !== 'Random' ? `Facial Hair: ${options.facialHair}` : "";
+
+
   const count = options.alternateOutfitsCount || 0;
   const alternateOutfitsPrompt = count > 0
     ? `Generate ${count} distinct additional alternate outfits (e.g., Training Gear, Formal Wear, Stealth, Casual, or Battle-Damaged) in the 'alternateOutfits' array. Each must have a name, description, and list of materials.`
@@ -147,7 +194,7 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
   const prompt = `
     Generate a detailed, 3D-ready martial artist character profile.
     The character can be human, animal, robot, or supernatural entity.
-    Specific attention to physical build, detailed outfit textures/materials (for 3D modeling reference), a distinct fighting stance, and a signature weapon or fighting tool.
+    Specific attention to physical build, detailed outfit textures/materials (for 3D modeling reference), a distinct fighting stance with stats, and a signature weapon or fighting tool.
     
     Constraints & Preferences:
     - ${namePrompt}
@@ -158,10 +205,23 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     - ${martialArtPrompt}
     - ${personalityPrompt}
     - ${themePrompt}
+    - ${outfitStylePrompt}
     - ${weaponPrompt}
+    - ${weaponMaterialPrompt}
     - ${ageGroupPrompt}
     - ${alignmentPrompt}
     - ${elementPrompt}
+    
+    Appearance Details:
+    - ${skinTonePrompt}
+    - ${eyeShapePrompt}
+    - ${faceTypePrompt}
+    - ${hairStylePrompt}
+    - ${hairColorPrompt}
+    - ${eyeColorPrompt}
+    - ${heightPrompt}
+    - ${weightPrompt}
+    - ${facialHairPrompt}
     
     ${customInstructions}
     
@@ -169,11 +229,10 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     
     Ensure the color palette provides valid Hex codes.
     The fighting stance should be described technically for animation reference and must reflect the chosen Martial Arts Style.
+    Provide numeric stats (1-10) for the fighting stance's offense, defense, speed, and reach in the 'fightingStance.stats' object.
     If a specific nationality or ethnicity is requested, ensure the outfit and name reflect it culturally where appropriate, unless the Theme dictates otherwise (e.g. Cyberpunk).
     If the species is non-human (e.g. Panda, Tiger, Robot), ensure the Martial Arts style is adapted to their physiology.
     Include the 'element' field to describe their magical or technological power source (e.g. "Fire", "Ki", "Hydraulics").
-    Include the 'alignment' field (e.g. "Hero", "Villain").
-    Include the 'ageGroup' field (e.g. "Young Adult", "Veteran").
   `;
 
   try {
@@ -183,7 +242,7 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
       config: {
         responseMimeType: "application/json",
         responseSchema: CHARACTER_SCHEMA,
-        temperature: 0.9, // Higher creativity for varied results
+        temperature: 0.9,
       },
     });
 
@@ -209,12 +268,14 @@ export const generateCharacterImage = async (character: CharacterData): Promise<
     Origin/Nationality: ${character.nationality}.
     Martial Arts Style: ${character.martialArtStyle}.
     Build: ${character.build.description}.
-    Weapon: ${character.weapon.name} (${character.weapon.type}).
+    Skin Tone: ${character.appearance.skinTone}.
+    Face: ${character.appearance.faceType}, ${character.appearance.eyeShape} eyes.
+    Weapon: ${character.weapon.name} (${character.weapon.type}) made of ${character.weapon.material}.
     Outfit: ${character.outfit.description}. 
     Wearing materials: ${character.outfit.materials.join(', ')}.
     Colors: Primary ${character.colorPalette.primary}, Secondary ${character.colorPalette.secondary}, Accent ${character.colorPalette.accent}.
     Markings: ${character.bodyMarkings.join(', ')}.
-    Stance: ${character.fightingStance.description}.
+    Stance: ${character.fightingStance.description} (${character.fightingStance.type}).
     Style: High quality, 3D render style, octane render, detailed textures, neutral studio background lighting.
   `;
 
@@ -227,7 +288,6 @@ export const generateCharacterImage = async (character: CharacterData): Promise<
       }
     });
 
-    // Extract image from response parts
     if (response.candidates?.[0]?.content?.parts) {
       for (const part of response.candidates[0].content.parts) {
         if (part.inlineData && part.inlineData.data) {
@@ -238,7 +298,6 @@ export const generateCharacterImage = async (character: CharacterData): Promise<
     return undefined;
   } catch (error) {
     console.error("Error generating character image:", error);
-    // We don't throw here to allow the text to still be displayed even if image fails
     return undefined;
   }
 };

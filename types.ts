@@ -1,5 +1,4 @@
 
-
 export interface Outfit {
   name: string;
   description: string;
@@ -16,6 +15,17 @@ export interface CharacterData {
   alignment: string;
   element: string;
   martialArtStyle: string;
+  appearance: {
+    faceType: string;
+    skinTone: string;
+    eyeShape: string;
+    eyeColor: string;
+    hairStyle: string;
+    hairColor: string;
+    facialHair: string;
+    height: string;
+    weight: string;
+  };
   build: {
     type: string;
     description: string;
@@ -24,6 +34,8 @@ export interface CharacterData {
     name: string;
     type: string;
     description: string;
+    color: string;
+    material: string;
   };
   outfit: Outfit;
   alternateOutfits?: Outfit[];
@@ -35,8 +47,15 @@ export interface CharacterData {
   bodyMarkings: string[];
   fightingStance: {
     name: string;
+    type: string; // e.g. Aggressive, Defensive, Fluid
     description: string;
     keyFeatures: string[];
+    stats: {
+      offense: number; // 1-10
+      defense: number; // 1-10
+      speed: number;   // 1-10
+      reach: number;   // 1-10
+    };
   };
   backstory: string;
 }
@@ -53,8 +72,11 @@ export interface GenerationOptions {
   gender?: 'Male' | 'Female' | 'Non-binary' | 'Random';
   species?: string;
   theme?: string;
-  weapon?: 'Unarmed' | 'Sword' | 'Staff' | 'Unique' | 'Random' | 'Daggers' | 'Nunchaku' | 'Bow' | 'Axe' | 'Chain' | 'Scythe' | 'Fans' | 'Firearms' | 'Tonfa';
+  weapon?: string;
+  weaponMaterial?: string;
+  weaponColor?: string;
   martialArtStyle?: string;
+  outfitStyle?: string;
   customName?: string;
   nationality?: string;
   ethnicity?: string;
@@ -62,6 +84,18 @@ export interface GenerationOptions {
   ageGroup?: string;
   alignment?: string;
   element?: string;
+  
+  // Appearance
+  faceType?: string;
+  skinTone?: string;
+  eyeShape?: string;
+  eyeColor?: string;
+  hairStyle?: string;
+  hairColor?: string;
+  facialHair?: string;
+  height?: string;
+  weight?: string;
+
   alternateOutfitsCount?: number;
   customPrompt?: string;
 }

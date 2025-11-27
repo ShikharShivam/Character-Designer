@@ -1,22 +1,26 @@
 
-
 import React, { useState, useEffect } from 'react';
 import Controls from './components/Controls';
 import CharacterCard from './components/CharacterCard';
-import { CharacterData, GeneratedCharacter, GenerationOptions, GenerationStatus } from './types';
+import Roster from './components/Roster';
+import { GeneratedCharacter, GenerationOptions, GenerationStatus } from './types';
 import { generateCharacterProfile, generateCharacterImage } from './services/geminiService';
-import { Sword, Github } from 'lucide-react';
+import { Sword } from 'lucide-react';
 
 const App: React.FC = () => {
   const [character, setCharacter] = useState<GeneratedCharacter | null>(null);
   const [status, setStatus] = useState<GenerationStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [savedCharacters, setSavedCharacters] = useState<GeneratedCharacter[]>([]);
   
   const [options, setOptions] = useState<GenerationOptions>({
     gender: 'Random',
     species: 'Random',
     theme: 'Random',
     weapon: 'Random',
+    weaponMaterial: 'Random',
+    weaponColor: '',
+    outfitStyle: 'Random',
     nationality: 'Random',
     ethnicity: 'Random',
     personality: 'Random',
@@ -26,8 +30,58 @@ const App: React.FC = () => {
     element: 'Random',
     customName: '',
     customPrompt: '',
-    alternateOutfitsCount: 0
+    alternateOutfitsCount: 0,
+    
+    // Appearance defaults
+    faceType: 'Random',
+    skinTone: 'Random',
+    eyeShape: 'Random',
+    eyeColor: 'Random',
+    hairStyle: 'Random',
+    hairColor: 'Random',
+    facialHair: 'Random',
+    height: 'Random',
+    weight: 'Random'
   });
+
+  // Load saved characters from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('forge_roster');
+      if (saved) {
+        setSavedCharacters(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("Failed to load roster", e);
+    }
+  }, []);
+
+  // Save character to roster
+  const handleSaveCharacter = (charToSave: GeneratedCharacter) => {
+    try {
+      // Check if already saved
+      if (savedCharacters.some(c => c.id === charToSave.id)) return;
+
+      const updatedList = [charToSave, ...savedCharacters];
+      setSavedCharacters(updatedList);
+      localStorage.setItem('forge_roster', JSON.stringify(updatedList));
+    } catch (e) {
+      console.error("Failed to save character", e);
+      setError("Storage quota exceeded. Please remove some characters to save new ones.");
+    }
+  };
+
+  // Remove character from roster
+  const handleRemoveCharacter = (id: string) => {
+    const updatedList = savedCharacters.filter(c => c.id !== id);
+    setSavedCharacters(updatedList);
+    localStorage.setItem('forge_roster', JSON.stringify(updatedList));
+  };
+
+  // Check if current character is saved
+  const isCurrentCharacterSaved = character 
+    ? savedCharacters.some(c => c.id === character.id)
+    : false;
 
   const handleGenerate = async () => {
     setStatus('generating_text');
@@ -70,7 +124,7 @@ const App: React.FC = () => {
       {/* Navbar */}
       <nav className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => {setCharacter(null); setStatus('idle');}}>
             <div className="bg-gradient-to-tr from-cyan-600 to-blue-600 p-2 rounded-lg">
               <Sword className="text-white h-6 w-6" />
             </div>
@@ -85,7 +139,7 @@ const App: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
         {/* Intro */}
         <div className="text-center mb-12">
@@ -125,12 +179,17 @@ const App: React.FC = () => {
         {/* Result Area */}
         {character && (
           <div className="space-y-6">
-             <CharacterCard character={character} />
+             <CharacterCard 
+                character={character} 
+                isSaved={isCurrentCharacterSaved}
+                onSave={handleSaveCharacter}
+                onRemove={handleRemoveCharacter}
+             />
           </div>
         )}
 
         {/* Empty State */}
-        {!character && status === 'idle' && (
+        {!character && status === 'idle' && savedCharacters.length === 0 && (
           <div className="text-center py-20 border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/20">
             <div className="opacity-30 flex flex-col items-center">
               <Sword size={64} className="mb-4" />
@@ -139,6 +198,17 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Saved Roster */}
+        <Roster 
+          characters={savedCharacters} 
+          onSelect={(char) => {
+             setCharacter(char);
+             setStatus('complete'); // Show the card
+             window.scrollTo({ top: 400, behavior: 'smooth' }); // Scroll to card
+          }} 
+          onRemove={handleRemoveCharacter} 
+        />
 
       </main>
 
