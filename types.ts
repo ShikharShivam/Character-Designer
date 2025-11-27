@@ -98,4 +98,5 @@ export interface GenerationOptions {
 
   alternateOutfitsCount?: number;
   customPrompt?: string;
+  referenceImage?: string; // Base64 data URL
 }

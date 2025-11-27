@@ -1,8 +1,7 @@
-
-import React from 'react';
+import React, { useRef } from 'react';
 import { GenerationOptions } from '../types';
 import Button from './Button';
-import { Sparkles, UserCircle, MessageSquare } from 'lucide-react';
+import { Sparkles, UserCircle, MessageSquare, Upload, X, Image as ImageIcon } from 'lucide-react';
 
 interface ControlsProps {
   options: GenerationOptions;
@@ -12,22 +11,41 @@ interface ControlsProps {
 }
 
 const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, isGenerating }) => {
-  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleChange = (key: keyof GenerationOptions, value: any) => {
     setOptions({ ...options, [key]: value });
   };
 
-  const inputClasses = "w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-forge-accent focus:border-transparent outline-none transition-all placeholder-slate-500 text-sm";
-  const labelClasses = "text-xs uppercase tracking-wider font-semibold text-slate-500 mb-1 block";
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange('referenceImage', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImage = () => {
+    handleChange('referenceImage', undefined);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const inputClasses = "w-full bg-stone-800 border border-stone-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-forge-accent focus:border-transparent outline-none transition-all placeholder-stone-500 text-sm hover:border-stone-500";
+  const labelClasses = "text-xs uppercase tracking-wider font-semibold text-stone-500 mb-1 block";
 
   return (
-    <div className="bg-forge-card p-6 rounded-xl border border-slate-700 shadow-xl mb-8">
+    <div className="bg-forge-card p-6 rounded-xl border border-stone-700 shadow-xl mb-8">
       
       {/* Name Input */}
       <div className="mb-6">
         <label className={labelClasses}>Character Name (Optional)</label>
         <div className="relative">
-          <UserCircle className="absolute left-3 top-2.5 text-slate-500" size={20} />
+          <UserCircle className="absolute left-3 top-2.5 text-stone-500" size={20} />
           <input
             type="text"
             className={`${inputClasses} pl-10`}
@@ -41,7 +59,7 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
         
         {/* === CORE IDENTITY === */}
-        <div className="col-span-full mb-2 border-b border-slate-700 pb-2">
+        <div className="col-span-full mb-2 border-b border-stone-700 pb-2">
             <h4 className="text-forge-accent text-sm font-bold uppercase tracking-wider">Core Identity</h4>
         </div>
 
@@ -287,7 +305,7 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
         </div>
 
         {/* === PHYSICAL APPEARANCE === */}
-        <div className="col-span-full mt-4 mb-2 border-b border-slate-700 pb-2">
+        <div className="col-span-full mt-4 mb-2 border-b border-stone-700 pb-2">
              <h4 className="text-forge-accent text-sm font-bold uppercase tracking-wider">Physical Appearance</h4>
         </div>
 
@@ -435,7 +453,7 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
         </div>
 
         {/* === COMBAT & STYLE === */}
-        <div className="col-span-full mt-4 mb-2 border-b border-slate-700 pb-2">
+        <div className="col-span-full mt-4 mb-2 border-b border-stone-700 pb-2">
              <h4 className="text-forge-accent text-sm font-bold uppercase tracking-wider">Combat & Style</h4>
         </div>
 
@@ -483,6 +501,12 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
               <option value="Eskrima">Eskrima / Arnis / Kali</option>
               <option value="Bokator">Bokator</option>
             </optgroup>
+            
+            <optgroup label="Indian & South Asian">
+              <option value="Kalaripayattu">Kalaripayattu</option>
+              <option value="Gatka">Gatka</option>
+              <option value="Malla-yuddha">Malla-yuddha</option>
+            </optgroup>
 
             <optgroup label="Western, Grappling & Modern">
               <option value="Boxing">Boxing</option>
@@ -498,6 +522,21 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
               <option value="MMA">MMA / Hybrid</option>
               <option value="CQC">Military CQC</option>
               <option value="Street Fighting">Dirty Street Fighting</option>
+            </optgroup>
+
+            <optgroup label="Historical European">
+              <option value="HEMA">HEMA / Longsword</option>
+              <option value="Fencing">Fencing</option>
+              <option value="Bartitsu">Bartitsu</option>
+              <option value="Glima">Glima</option>
+            </optgroup>
+            
+            <optgroup label="Fictional & Anime Inspired">
+              <option value="Turtle Style">Turtle Style (Kame)</option>
+              <option value="Gentle Fist">Gentle Fist</option>
+              <option value="Ansatsuken">Ansatsuken (Assassin's Fist)</option>
+              <option value="Hokuto Shinken">Hokuto Shinken</option>
+              <option value="Water Stream Rock Smashing Fist">Water Stream Rock Smashing Fist</option>
             </optgroup>
           </select>
         </div>
@@ -697,8 +736,8 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
         <div>
            <label className={labelClasses}>Weapon Color</label>
            <div className="flex gap-2">
-             <div className="h-full aspect-square bg-slate-700 rounded flex items-center justify-center border border-slate-600">
-               <div className="w-4 h-4 rounded-full" style={{backgroundColor: options.weaponColor || '#cbd5e1'}}></div>
+             <div className="h-full aspect-square bg-stone-700 rounded flex items-center justify-center border border-stone-600">
+               <div className="w-4 h-4 rounded-full" style={{backgroundColor: options.weaponColor || '#d6d3d1'}}></div>
              </div>
              <input
               type="text"
@@ -746,25 +785,69 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
         </div>
       </div>
 
-       {/* Custom Prompt Input */}
-       <div className="mb-6">
-        <label className={labelClasses}>Custom Instructions / Prompt</label>
-        <div className="relative">
-          <MessageSquare className="absolute left-3 top-3 text-slate-500" size={20} />
-          <textarea
-            className={`${inputClasses} pl-10 h-24 resize-none`}
-            placeholder="Describe specific details... e.g. 'A futuristic samurai with a neon katana' or 'A panda wearing Shaolin monk robes'"
-            value={options.customPrompt || ''}
-            onChange={(e) => handleChange('customPrompt', e.target.value)}
-          />
-        </div>
+      {/* Image Upload & Custom Prompt */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+         {/* Custom Prompt Input */}
+         <div className="h-full">
+            <label className={labelClasses}>Custom Instructions / Prompt</label>
+            <div className="relative h-full">
+               <MessageSquare className="absolute left-3 top-3 text-stone-500" size={20} />
+               <textarea
+                  className={`${inputClasses} pl-10 h-32 md:h-full resize-none`}
+                  placeholder="Describe specific details... e.g. 'A futuristic samurai with a neon katana' or 'A panda wearing Shaolin monk robes'"
+                  value={options.customPrompt || ''}
+                  onChange={(e) => handleChange('customPrompt', e.target.value)}
+               />
+            </div>
+         </div>
+
+         {/* Image Upload Input */}
+         <div>
+            <label className={labelClasses}>Reference Image (Optional)</label>
+            <div className={`relative h-32 md:h-full border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-all bg-stone-800/50 overflow-hidden ${options.referenceImage ? 'border-forge-accent' : 'border-stone-600 hover:border-stone-400'}`}>
+               
+               {options.referenceImage ? (
+                  <div className="w-full h-full relative group">
+                     <img 
+                        src={options.referenceImage} 
+                        alt="Reference" 
+                        className="w-full h-full object-cover opacity-80" 
+                     />
+                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <button 
+                           onClick={clearImage}
+                           className="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-full"
+                           title="Remove Image"
+                         >
+                            <X size={20} />
+                         </button>
+                     </div>
+                  </div>
+               ) : (
+                  <>
+                     <input 
+                        type="file" 
+                        ref={fileInputRef}
+                        accept="image/*"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        onChange={handleImageUpload}
+                     />
+                     <div className="flex flex-col items-center text-stone-400 pointer-events-none">
+                        <Upload size={24} className="mb-2 text-forge-accent" />
+                        <span className="text-xs font-semibold">Click or Drop Image</span>
+                        <span className="text-xs text-stone-500 mt-1">To analyze style & features</span>
+                     </div>
+                  </>
+               )}
+            </div>
+         </div>
       </div>
 
-      <div className="flex justify-center border-t border-slate-700 pt-6">
+      <div className="flex justify-center border-t border-stone-700 pt-6">
         <Button 
           onClick={onGenerate} 
           isLoading={isGenerating} 
-          className="w-full md:w-auto md:px-16 py-3 text-lg"
+          className="w-full md:w-auto md:px-16 py-3 text-lg font-bold tracking-wide"
         >
           {isGenerating ? 'Forging Character...' : (
             <>

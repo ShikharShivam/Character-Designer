@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Controls from './components/Controls';
 import CharacterCard from './components/CharacterCard';
@@ -119,20 +118,20 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-forge-dark text-slate-200 font-sans pb-20">
+    <div className="min-h-screen bg-forge-dark text-stone-200 font-sans pb-20">
       
       {/* Navbar */}
-      <nav className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+      <nav className="border-b border-stone-800 bg-stone-900/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => {setCharacter(null); setStatus('idle');}}>
-            <div className="bg-gradient-to-tr from-cyan-600 to-blue-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-br from-red-600 to-amber-500 p-2 rounded-lg shadow-lg shadow-red-900/20">
               <Sword className="text-white h-6 w-6" />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-white">
               Martial Arts <span className="text-forge-accent">Forge</span>
             </h1>
           </div>
-          <div className="text-sm text-slate-500 hidden sm:block">
+          <div className="text-sm text-stone-500 hidden sm:block">
             Powered by Gemini 2.5
           </div>
         </div>
@@ -144,9 +143,9 @@ const App: React.FC = () => {
         {/* Intro */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
-            Design Your Ultimate Fighter
+            Design Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-forge-accent to-red-500">Ultimate Fighter</span>
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg text-stone-400 max-w-2xl mx-auto">
             Generate production-ready character concepts with detailed 3D modeling specifications, 
             unique fighting styles, and visual references.
           </p>
@@ -171,7 +170,7 @@ const App: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-lg text-center mb-8">
+          <div className="bg-red-900/20 border border-red-800/50 text-red-300 p-4 rounded-lg text-center mb-8">
             {error}
           </div>
         )}
@@ -190,8 +189,8 @@ const App: React.FC = () => {
 
         {/* Empty State */}
         {!character && status === 'idle' && savedCharacters.length === 0 && (
-          <div className="text-center py-20 border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/20">
-            <div className="opacity-30 flex flex-col items-center">
+          <div className="text-center py-20 border-2 border-dashed border-stone-800 rounded-xl bg-stone-900/20">
+            <div className="opacity-30 flex flex-col items-center text-stone-500">
               <Sword size={64} className="mb-4" />
               <p className="text-xl font-semibold">Ready to Forge</p>
               <p className="text-sm mt-2">Select options above and click Generate</p>
@@ -213,7 +212,7 @@ const App: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 mt-20 py-8 text-center text-slate-600 text-sm">
+      <footer className="border-t border-stone-800 mt-20 py-8 text-center text-stone-600 text-sm">
         <p>&copy; {new Date().getFullYear()} Martial Arts Character Forge. Built with React & Gemini.</p>
       </footer>
     </div>

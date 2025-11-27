@@ -190,12 +190,18 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
   const customInstructions = options.customPrompt && options.customPrompt.trim() !== ''
     ? `USER CUSTOM INSTRUCTIONS (PRIORITY): ${options.customPrompt}`
     : "";
+  
+  const imageInstruction = options.referenceImage 
+    ? "IMPORTANT: Analyze the provided image. Use it as the PRIMARY inspiration for the character's visual design, outfit, build, and overall vibe. The generated stats and profile should match the character depicted in the image." 
+    : "";
 
-  const prompt = `
+  const promptText = `
     Generate a detailed, 3D-ready martial artist character profile.
     The character can be human, animal, robot, or supernatural entity.
     Specific attention to physical build, detailed outfit textures/materials (for 3D modeling reference), a distinct fighting stance with stats, and a signature weapon or fighting tool.
     
+    ${imageInstruction}
+
     Constraints & Preferences:
     - ${namePrompt}
     - ${speciesPrompt}
@@ -235,10 +241,27 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     Include the 'element' field to describe their magical or technological power source (e.g. "Fire", "Ki", "Hydraulics").
   `;
 
+  let contents: any = promptText;
+
+  // Handle Multimodal Input (Image + Text)
+  if (options.referenceImage) {
+    const matches = options.referenceImage.match(/^data:(.+);base64,(.+)$/);
+    if (matches) {
+      const mimeType = matches[1];
+      const data = matches[2];
+      contents = {
+        parts: [
+           { text: promptText },
+           { inlineData: { mimeType, data } }
+        ]
+      };
+    }
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: prompt,
+      contents: contents,
       config: {
         responseMimeType: "application/json",
         responseSchema: CHARACTER_SCHEMA,
