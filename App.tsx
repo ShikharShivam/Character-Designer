@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import Controls from './components/Controls';
 import CharacterCard from './components/CharacterCard';
 import Roster from './components/Roster';
 import { GeneratedCharacter, GenerationOptions, GenerationStatus } from './types';
 import { generateCharacterProfile, generateCharacterImage } from './services/geminiService';
-import { Sword, Sparkles } from 'lucide-react';
+import { Sword } from 'lucide-react';
 
 const App: React.FC = () => {
   const [character, setCharacter] = useState<GeneratedCharacter | null>(null);
@@ -16,6 +17,7 @@ const App: React.FC = () => {
     gender: 'Random',
     species: 'Random',
     theme: 'Random',
+    gameInspiration: 'None',
     weapon: 'Random',
     weaponMaterial: 'Random',
     weaponColor: '',
@@ -30,8 +32,6 @@ const App: React.FC = () => {
     customName: '',
     customPrompt: '',
     alternateOutfitsCount: 0,
-    
-    // Appearance defaults
     faceType: 'Random',
     skinTone: 'Random',
     eyeShape: 'Random',
@@ -43,7 +43,6 @@ const App: React.FC = () => {
     weight: 'Random'
   });
 
-  // Load saved characters from localStorage on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem('forge_roster');
@@ -55,29 +54,24 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Save character to roster
   const handleSaveCharacter = (charToSave: GeneratedCharacter) => {
     try {
-      // Check if already saved
       if (savedCharacters.some(c => c.id === charToSave.id)) return;
-
       const updatedList = [charToSave, ...savedCharacters];
       setSavedCharacters(updatedList);
       localStorage.setItem('forge_roster', JSON.stringify(updatedList));
     } catch (e) {
       console.error("Failed to save character", e);
-      setError("Storage quota exceeded. Please remove some characters to save new ones.");
+      setError("Storage quota exceeded. Please remove some characters.");
     }
   };
 
-  // Remove character from roster
   const handleRemoveCharacter = (id: string) => {
     const updatedList = savedCharacters.filter(c => c.id !== id);
     setSavedCharacters(updatedList);
     localStorage.setItem('forge_roster', JSON.stringify(updatedList));
   };
 
-  // Check if current character is saved
   const isCurrentCharacterSaved = character 
     ? savedCharacters.some(c => c.id === character.id)
     : false;
@@ -85,161 +79,154 @@ const App: React.FC = () => {
   const handleGenerate = async () => {
     setStatus('generating_text');
     setError(null);
-
     try {
-      // 1. Generate Text Profile
       const profileData = await generateCharacterProfile(options);
-      
       const newCharacter: GeneratedCharacter = {
         ...profileData,
         id: crypto.randomUUID(),
         timestamp: Date.now(),
       };
-      
-      // Show text immediately
       setCharacter(newCharacter);
       
-      // 2. Generate Visual Reference
       setStatus('generating_image');
       const imageUrl = await generateCharacterImage(profileData);
       
-      // Update with image
       if (imageUrl) {
         setCharacter(prev => prev ? { ...prev, imageUrl } : null);
       }
-      
       setStatus('complete');
-      
     } catch (err: any) {
       console.error("Generation failed", err);
-      setError(err.message || "Failed to generate character. Please check API Key or try again.");
+      setError(err.message || "Failed to generate character.");
       setStatus('error');
     }
   };
 
   return (
-    <div className="min-h-screen bg-master-bg text-master-ivory font-sans selection:bg-master-gold selection:text-master-bg overflow-x-hidden relative">
+    <div className="min-h-screen bg-master-bg text-master-ivory font-sans selection:bg-master-gold selection:text-master-bg overflow-x-hidden relative flex flex-col">
       
-      {/* Background Ambience - Animated */}
+      {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-         {/* Base */}
          <div className="absolute inset-0 bg-master-bg"></div>
-         
-         {/* Moving Blobs */}
          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-900/10 rounded-full blur-[100px] mix-blend-screen animate-blob"></div>
          <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] bg-master-gold/5 rounded-full blur-[120px] mix-blend-screen animate-blob animate-delay-2000"></div>
          <div className="absolute bottom-[-20%] left-[20%] w-[60%] h-[60%] bg-indigo-900/10 rounded-full blur-[100px] mix-blend-screen animate-blob animate-delay-4000"></div>
-         
-         {/* Drifting Noise Texture */}
          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] animate-drift"></div>
-         
-         {/* Radial Gradient Overlay */}
          <div className="absolute inset-0 bg-gradient-radial from-transparent to-master-bg/90"></div>
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-screen">
-      
-        {/* Cinematic Header */}
-        <header className="pt-10 pb-6 px-6">
-          <div className="max-w-7xl mx-auto flex items-center justify-between border-b border-master-gold/10 pb-6">
-            <div className="flex items-center gap-4 cursor-pointer group" onClick={() => {setCharacter(null); setStatus('idle');}}>
-              <div className="w-12 h-12 bg-gradient-to-br from-master-gold to-master-gold-dim flex items-center justify-center shadow-glow-gold rotate-45 group-hover:rotate-90 transition-transform duration-500">
-                <Sword className="text-master-bg h-6 w-6 -rotate-45 group-hover:-rotate-90 transition-transform duration-500" />
+      {/* Main Content Area */}
+      <div className="relative z-10 flex-grow w-full max-w-[1920px] mx-auto p-4 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-8 items-start h-full">
+        
+        {/* === LEFT COLUMN: CONTROLS SIDEBAR === */}
+        <aside className="w-full lg:w-[400px] flex-shrink-0 z-20">
+          <div className="mb-6 flex items-center gap-3 cursor-pointer group" onClick={() => {setCharacter(null); setStatus('idle');}}>
+              <div className="w-10 h-10 bg-gradient-to-br from-master-gold to-master-gold-dim flex items-center justify-center shadow-glow-gold rotate-45 group-hover:rotate-90 transition-transform duration-500">
+                <Sword className="text-master-bg h-5 w-5 -rotate-45 group-hover:-rotate-90 transition-transform duration-500" />
               </div>
               <div>
-                <h1 className="text-2xl font-serif font-black tracking-widest uppercase text-white">
+                <h1 className="text-xl font-serif font-black tracking-widest uppercase text-white leading-none">
                   Martial <span className="text-master-gold">Forge</span>
                 </h1>
-                <p className="text-[10px] text-master-ivory-dim tracking-[0.3em] uppercase">Character Design System</p>
+                <p className="text-[8px] text-master-ivory-dim tracking-[0.4em] uppercase">System V 3.0</p>
               </div>
-            </div>
-            
-            <div className="hidden md:flex items-center gap-6">
-               <span className="text-xs font-serif text-master-ivory-dim tracking-widest uppercase opacity-50">V 2.5.0</span>
-            </div>
           </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
           
-          {/* Hero Section */}
-          <div className="text-center mb-16 relative">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-master-gold/5 blur-3xl rounded-full pointer-events-none animate-pulse-slow"></div>
-             <h2 className="text-5xl md:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-master-ivory to-master-ivory-dim mb-6 tracking-tight drop-shadow-2xl relative z-10">
-                FORGE YOUR <br/> <span className="text-master-gold bg-clip-text text-transparent bg-gradient-to-r from-master-gold via-master-gold-light to-master-gold">LEGEND</span>
-             </h2>
-             <p className="text-lg text-master-ivory-dim max-w-2xl mx-auto font-light leading-relaxed tracking-wide">
-                The ultimate character synthesis engine. Create cinema-quality martial arts concepts 
-                with deep lore, combat analytics, and high-fidelity visual references.
-             </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-             
-             {/* Controls Column */}
-             <div className="lg:col-span-12 xl:col-span-10 xl:col-start-2">
-                <Controls 
-                  options={options} 
-                  setOptions={setOptions} 
-                  onGenerate={handleGenerate}
-                  isGenerating={status === 'generating_text' || status === 'generating_image'}
-                />
-             </div>
-          </div>
-
-          {/* Loading Indicator */}
-          {status !== 'idle' && status !== 'complete' && status !== 'error' && (
-            <div className="flex flex-col items-center justify-center py-12 animate-pulse">
-              <div className="w-16 h-16 border-4 border-master-surface border-t-master-gold rounded-full animate-spin mb-4 shadow-glow-gold"></div>
-              <p className="text-master-gold font-serif tracking-widest text-sm uppercase">
-                {status === 'generating_text' ? 'Synthesizing Profile Data...' : 'Rendering Visual Asset...'}
-              </p>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="max-w-2xl mx-auto bg-red-900/20 border border-red-500/30 text-red-200 p-6 rounded-sm text-center mb-12 backdrop-blur-sm">
-              <h4 className="font-serif font-bold uppercase tracking-wider mb-2 text-red-400">System Error</h4>
-              <p>{error}</p>
-            </div>
-          )}
-
-          {/* Result Area */}
-          {character && (
-            <div className="space-y-6 lg:col-span-12 xl:col-span-10 xl:col-start-2 max-w-5xl mx-auto">
-               <CharacterCard 
-                  character={character} 
-                  isSaved={isCurrentCharacterSaved}
-                  onSave={handleSaveCharacter}
-                  onRemove={handleRemoveCharacter}
-               />
-            </div>
-          )}
-
-          {/* Saved Roster */}
-          <div className="max-w-6xl mx-auto">
+          <Controls 
+            options={options} 
+            setOptions={setOptions} 
+            onGenerate={handleGenerate}
+            isGenerating={status === 'generating_text' || status === 'generating_image'}
+          />
+          
+          <div className="mt-8 hidden lg:block">
              <Roster 
                characters={savedCharacters} 
                onSelect={(char) => {
                   setCharacter(char);
                   setStatus('complete');
-                  window.scrollTo({ top: 400, behavior: 'smooth' });
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                }} 
                onRemove={handleRemoveCharacter} 
              />
           </div>
+        </aside>
 
+        {/* === RIGHT COLUMN: PREVIEW & RESULTS === */}
+        <main className="flex-1 w-full flex flex-col gap-8 min-h-[85vh]">
+           
+           {/* Welcome Hero (Show when no character) */}
+           {!character && status === 'idle' && (
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-12 border border-master-gold/10 rounded-sm bg-master-bg/20 backdrop-blur-sm relative overflow-hidden">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-master-gold/5 blur-3xl rounded-full pointer-events-none animate-pulse-slow"></div>
+                  <h2 className="text-4xl md:text-6xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-master-ivory to-master-ivory-dim mb-6 tracking-tight drop-shadow-2xl relative z-10">
+                    AWAITING <br/> <span className="text-master-gold">INPUT</span>
+                  </h2>
+                  <p className="text-sm text-master-ivory-dim max-w-lg mx-auto font-light leading-relaxed tracking-wide mb-8">
+                    Configure parameters in the control module to synthesize a new martial artist profile.
+                    The forge is ready to generate detailed lore, combat analytics, and visual assets.
+                  </p>
+                  
+                  {/* Decorative Elements */}
+                  <div className="grid grid-cols-3 gap-8 text-master-gold/30 uppercase text-[10px] tracking-widest font-serif">
+                     <div className="flex flex-col items-center gap-2">
+                        <div className="w-1 h-8 bg-current"></div>
+                        <span>Identity</span>
+                     </div>
+                     <div className="flex flex-col items-center gap-2">
+                        <div className="w-1 h-8 bg-current"></div>
+                        <span>Combat</span>
+                     </div>
+                     <div className="flex flex-col items-center gap-2">
+                        <div className="w-1 h-8 bg-current"></div>
+                        <span>Visuals</span>
+                     </div>
+                  </div>
+              </div>
+           )}
+
+           {/* Loading State */}
+           {status !== 'idle' && status !== 'complete' && status !== 'error' && (
+             <div className="flex-1 flex flex-col items-center justify-center p-12 border border-master-gold/10 rounded-sm bg-master-bg/20 backdrop-blur-sm">
+                <div className="w-20 h-20 border-4 border-master-surface border-t-master-gold rounded-full animate-spin mb-6 shadow-glow-gold"></div>
+                <h3 className="text-2xl font-serif text-master-ivory mb-2">Processing Data</h3>
+                <p className="text-master-gold font-serif tracking-widest text-xs uppercase animate-pulse">
+                  {status === 'generating_text' ? 'Synthesizing Profile DNA...' : 'Rendering 3D Visual Asset...'}
+                </p>
+             </div>
+           )}
+
+           {/* Error Message */}
+           {error && (
+             <div className="bg-red-900/20 border border-red-500/30 text-red-200 p-6 rounded-sm text-center backdrop-blur-sm">
+               <h4 className="font-serif font-bold uppercase tracking-wider mb-2 text-red-400">System Error</h4>
+               <p>{error}</p>
+             </div>
+           )}
+
+           {/* Character Card Result */}
+           {character && (
+             <CharacterCard 
+                character={character} 
+                isSaved={isCurrentCharacterSaved}
+                onSave={handleSaveCharacter}
+                onRemove={handleRemoveCharacter}
+             />
+           )}
+           
+           {/* Mobile Roster (Visible only on small screens) */}
+           <div className="lg:hidden">
+              <Roster 
+                characters={savedCharacters} 
+                onSelect={(char) => {
+                  setCharacter(char);
+                  setStatus('complete');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }} 
+                onRemove={handleRemoveCharacter} 
+              />
+           </div>
         </main>
-
-        {/* Footer */}
-        <footer className="border-t border-master-gold/10 mt-auto py-12 text-center relative z-10 bg-master-bg">
-          <p className="text-master-ivory-dim text-xs font-serif tracking-[0.2em] uppercase opacity-60">
-             &copy; {new Date().getFullYear()} Martial Forge / Gemini Core System
-          </p>
-        </footer>
-      
       </div>
     </div>
   );

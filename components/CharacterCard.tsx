@@ -1,6 +1,8 @@
-import React from 'react';
+
+
+import React, { useState } from 'react';
 import { GeneratedCharacter } from '../types';
-import { User, Flag, Shield, Palette, Sword, History, Box, Activity, Layers, Flame, Dna, Zap, Star, Bookmark, Check, Trash2, Copy, Ruler, Weight, ScanFace, Eye, Scissors } from 'lucide-react';
+import { User, Flag, Shield, Palette, Sword, History, Box, Activity, Layers, Flame, Dna, Zap, Star, Bookmark, Check, Trash2, Copy, Ruler, Weight, ScanFace, Eye, Scissors, Play, Pause, Swords } from 'lucide-react';
 
 interface CharacterCardProps {
   character: GeneratedCharacter;
@@ -38,6 +40,8 @@ const StatBar: React.FC<{ label: string; value: number; colorClass?: string }> =
 );
 
 const CharacterCard: React.FC<CharacterCardProps> = ({ character, isSaved = false, onSave, onRemove }) => {
+  const [showStancePreview, setShowStancePreview] = useState(false);
+
   return (
     <div className="w-full glass-panel border-master-gold/30 rounded-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-700 relative">
       
@@ -221,10 +225,40 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, isSaved = fals
                         <Activity size={18} className="text-master-gold" />
                         <h3 className="text-lg font-serif font-bold tracking-widest uppercase text-master-ivory">{character.fightingStance.name}</h3>
                     </div>
-                    <span className="text-[10px] font-bold text-master-bg bg-master-gold px-2 py-1 uppercase tracking-wider rounded-sm">
-                        {character.fightingStance.type}
-                    </span>
+                    
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => setShowStancePreview(!showStancePreview)}
+                        className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm flex items-center gap-2 border transition-all ${showStancePreview ? 'bg-master-gold text-master-bg border-master-gold' : 'bg-transparent text-master-gold border-master-gold/30 hover:border-master-gold'}`}
+                      >
+                         {showStancePreview ? <Pause size={10} /> : <Play size={10} />}
+                         {showStancePreview ? 'Stop Preview' : 'Visualize'}
+                      </button>
+                      
+                      <span className="text-[10px] font-bold text-master-bg bg-master-gold px-2 py-1 uppercase tracking-wider rounded-sm">
+                          {character.fightingStance.type}
+                      </span>
+                    </div>
                 </div>
+                
+                {/* Animation Preview Area */}
+                {showStancePreview && (
+                  <div className="mb-6 p-4 bg-master-bg/80 border border-master-gold/20 rounded-sm relative overflow-hidden h-32 flex items-center justify-center">
+                      <div className="absolute inset-0 opacity-20 bg-[linear-gradient(0deg,transparent_24%,rgba(212,175,55,0.3)_25%,rgba(212,175,55,0.3)_26%,transparent_27%,transparent_74%,rgba(212,175,55,0.3)_75%,rgba(212,175,55,0.3)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(212,175,55,0.3)_25%,rgba(212,175,55,0.3)_26%,transparent_27%,transparent_74%,rgba(212,175,55,0.3)_75%,rgba(212,175,55,0.3)_76%,transparent_77%,transparent)] bg-[length:30px_30px] animate-drift"></div>
+                      
+                      <div className="relative z-10 text-center">
+                          {/* Simulated Stance Visualization */}
+                          <div className="flex gap-2 items-end h-16 justify-center">
+                             <div className="w-1.5 bg-master-gold animate-[bounce_1s_infinite] h-[40%] rounded-t-sm"></div>
+                             <div className="w-1.5 bg-master-gold animate-[bounce_1.2s_infinite] h-[70%] rounded-t-sm animation-delay-200"></div>
+                             <div className="w-1.5 bg-master-gold animate-[bounce_0.8s_infinite] h-[100%] rounded-t-sm animation-delay-100"></div>
+                             <div className="w-1.5 bg-master-gold animate-[bounce_1.5s_infinite] h-[60%] rounded-t-sm animation-delay-300"></div>
+                             <div className="w-1.5 bg-master-gold animate-[bounce_1.1s_infinite] h-[80%] rounded-t-sm animation-delay-50"></div>
+                          </div>
+                          <span className="text-[9px] text-master-gold uppercase tracking-[0.2em] animate-pulse mt-2 block">Simulating Motion Data...</span>
+                      </div>
+                  </div>
+                )}
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
@@ -327,6 +361,21 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, isSaved = fals
               {character.backstory}
             </p>
           </div>
+
+          {/* Combat Scenario */}
+          {character.combatStyleDescription && (
+             <div className="bg-master-surface/30 p-6 relative border border-master-gold/10 rounded-sm">
+                <div className="absolute top-0 left-0 w-2 h-2 bg-master-gold"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 bg-master-gold"></div>
+                <div className="flex items-center gap-3 mb-3">
+                   <Swords size={18} className="text-master-gold" />
+                   <h3 className="text-sm font-serif font-bold tracking-widest uppercase text-master-ivory">Combat Simulation</h3>
+                </div>
+                <p className="text-master-ivory-dim text-sm italic leading-relaxed border-l border-master-gold/30 pl-4 py-1">
+                   "{character.combatStyleDescription}"
+                </p>
+             </div>
+          )}
 
         </div>
       </div>

@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { CharacterData, GenerationOptions } from "../types";
 
@@ -108,9 +109,10 @@ const CHARACTER_SCHEMA = {
         }
       },
     },
+    combatStyleDescription: { type: Type.STRING, description: "A short, vivid snippet describing the character in action, visualizing a specific combat sequence using their weapon and stance." },
     backstory: { type: Type.STRING },
   },
-  required: ["name", "species", "gender", "nationality", "age", "ageGroup", "alignment", "element", "martialArtStyle", "appearance", "build", "weapon", "outfit", "colorPalette", "fightingStance"],
+  required: ["name", "species", "gender", "nationality", "age", "ageGroup", "alignment", "element", "martialArtStyle", "appearance", "build", "weapon", "outfit", "colorPalette", "fightingStance", "combatStyleDescription"],
 };
 
 export const generateCharacterProfile = async (options: GenerationOptions): Promise<CharacterData> => {
@@ -141,6 +143,10 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
   const themePrompt = options.theme && options.theme !== 'Random' 
     ? `Theme/Style: ${options.theme}` 
     : "Theme: Unique/Creative";
+
+  const gameInspirationPrompt = options.gameInspiration && options.gameInspiration !== 'None'
+    ? `Game Universe Inspiration: ${options.gameInspiration}. IMPORTANT: Adopt the visual style, technology level, lore aesthetic, and faction vibes of this specific game franchise.`
+    : "";
     
   const weaponPrompt = options.weapon && options.weapon !== 'Random' 
     ? `Weapon Preference: ${options.weapon}` 
@@ -211,6 +217,7 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     - ${martialArtPrompt}
     - ${personalityPrompt}
     - ${themePrompt}
+    - ${gameInspirationPrompt}
     - ${outfitStylePrompt}
     - ${weaponPrompt}
     - ${weaponMaterialPrompt}
@@ -236,6 +243,9 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     Ensure the color palette provides valid Hex codes.
     The fighting stance should be described technically for animation reference and must reflect the chosen Martial Arts Style.
     Provide numeric stats (1-10) for the fighting stance's offense, defense, speed, and reach in the 'fightingStance.stats' object.
+    
+    Create a 'combatStyleDescription'. This should be a cinematic snippet (2-3 sentences) describing the character in the middle of a fight, showcasing their unique style, weapon usage, and elemental powers if any.
+    
     If a specific nationality or ethnicity is requested, ensure the outfit and name reflect it culturally where appropriate, unless the Theme dictates otherwise (e.g. Cyberpunk).
     If the species is non-human (e.g. Panda, Tiger, Robot), ensure the Martial Arts style is adapted to their physiology.
     Include the 'element' field to describe their magical or technological power source (e.g. "Fire", "Ki", "Hydraulics").

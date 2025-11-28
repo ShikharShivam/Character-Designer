@@ -1,4 +1,5 @@
 
+
 export interface Outfit {
   name: string;
   description: string;
@@ -57,6 +58,7 @@ export interface CharacterData {
       reach: number;   // 1-10
     };
   };
+  combatStyleDescription: string;
   backstory: string;
 }
 
@@ -72,6 +74,7 @@ export interface GenerationOptions {
   gender?: 'Male' | 'Female' | 'Non-binary' | 'Random';
   species?: string;
   theme?: string;
+  gameInspiration?: string;
   weapon?: string;
   weaponMaterial?: string;
   weaponColor?: string;
