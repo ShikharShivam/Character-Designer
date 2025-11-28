@@ -1,5 +1,3 @@
-
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { CharacterData, GenerationOptions } from "../types";
 
@@ -113,6 +111,84 @@ const CHARACTER_SCHEMA = {
     backstory: { type: Type.STRING },
   },
   required: ["name", "species", "gender", "nationality", "age", "ageGroup", "alignment", "element", "martialArtStyle", "appearance", "build", "weapon", "outfit", "colorPalette", "fightingStance", "combatStyleDescription"],
+};
+
+// Helper to sanitize incoming JSON data
+const sanitizeCharacterData = (data: any): CharacterData => {
+  const safeList = (arr: any) => Array.isArray(arr) ? arr : [];
+  const safeString = (str: any, def: string) => typeof str === 'string' ? str : def;
+  const safeObj = (obj: any) => typeof obj === 'object' && obj !== null ? obj : {};
+
+  return {
+    ...data,
+    name: safeString(data.name, "Unknown Fighter"),
+    species: safeString(data.species, "Unknown"),
+    gender: safeString(data.gender, "Unknown"),
+    nationality: safeString(data.nationality, "Unknown"),
+    age: typeof data.age === 'number' ? data.age : 25,
+    ageGroup: safeString(data.ageGroup, "Adult"),
+    alignment: safeString(data.alignment, "Neutral"),
+    element: safeString(data.element, "None"),
+    martialArtStyle: safeString(data.martialArtStyle, "Brawl"),
+    appearance: {
+      faceType: safeString(data.appearance?.faceType, "Standard"),
+      skinTone: safeString(data.appearance?.skinTone, "Standard"),
+      eyeShape: safeString(data.appearance?.eyeShape, "Standard"),
+      eyeColor: safeString(data.appearance?.eyeColor, "Dark"),
+      hairStyle: safeString(data.appearance?.hairStyle, "Bald"),
+      hairColor: safeString(data.appearance?.hairColor, "None"),
+      facialHair: safeString(data.appearance?.facialHair, "None"),
+      height: safeString(data.appearance?.height, "Average"),
+      weight: safeString(data.appearance?.weight, "Average"),
+      ...safeObj(data.appearance)
+    },
+    build: {
+      type: safeString(data.build?.type, "Average"),
+      description: safeString(data.build?.description, "An average build."),
+      ...safeObj(data.build)
+    },
+    weapon: {
+      name: safeString(data.weapon?.name, "Fists"),
+      type: safeString(data.weapon?.type, "Unarmed"),
+      description: safeString(data.weapon?.description, "Combat ready hands."),
+      color: safeString(data.weapon?.color, "#CCCCCC"),
+      material: safeString(data.weapon?.material, "Bone"),
+      ...safeObj(data.weapon)
+    },
+    outfit: {
+      name: safeString(data.outfit?.name, "Basic Gear"),
+      description: safeString(data.outfit?.description, "Simple fighting clothes."),
+      materials: safeList(data.outfit?.materials),
+      ...safeObj(data.outfit)
+    },
+    alternateOutfits: safeList(data.alternateOutfits).map((o: any) => ({
+      name: safeString(o.name, "Alt Outfit"),
+      description: safeString(o.description, "Alternative gear."),
+      materials: safeList(o.materials)
+    })),
+    colorPalette: {
+      primary: safeString(data.colorPalette?.primary, "#000000"),
+      secondary: safeString(data.colorPalette?.secondary, "#555555"),
+      accent: safeString(data.colorPalette?.accent, "#FFFFFF"),
+      ...safeObj(data.colorPalette)
+    },
+    bodyMarkings: safeList(data.bodyMarkings),
+    fightingStance: {
+      name: safeString(data.fightingStance?.name, "Ready Stance"),
+      type: safeString(data.fightingStance?.type, "Balanced"),
+      description: safeString(data.fightingStance?.description, "Standing ready."),
+      keyFeatures: safeList(data.fightingStance?.keyFeatures),
+      stats: {
+        offense: typeof data.fightingStance?.stats?.offense === 'number' ? data.fightingStance.stats.offense : 5,
+        defense: typeof data.fightingStance?.stats?.defense === 'number' ? data.fightingStance.stats.defense : 5,
+        speed: typeof data.fightingStance?.stats?.speed === 'number' ? data.fightingStance.stats.speed : 5,
+        reach: typeof data.fightingStance?.stats?.reach === 'number' ? data.fightingStance.stats.reach : 5,
+      },
+      ...safeObj(data.fightingStance)
+    },
+    combatStyleDescription: safeString(data.combatStyleDescription, "Ready for combat."),
+    backstory: safeString(data.backstory, "No known history."),
+  };
 };
 
 export const generateCharacterProfile = async (options: GenerationOptions): Promise<CharacterData> => {
@@ -280,7 +356,10 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     });
 
     if (response.text) {
-      return JSON.parse(response.text) as CharacterData;
+      // Clean potential markdown blocks that confuse JSON.parse
+      const cleanedText = response.text.replace(/```json\n?|\n?```/g, "").trim();
+      const parsedData = JSON.parse(cleanedText);
+      return sanitizeCharacterData(parsedData);
     }
     throw new Error("No text returned from Gemini");
   } catch (error) {
@@ -290,6 +369,10 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
 };
 
 export const generateCharacterImage = async (character: CharacterData): Promise<string | undefined> => {
+  // Defensive checks to prevent undefined access (the "Cannot read properties of undefined (reading 'join')" error)
+  const outfitMaterials = character.outfit?.materials?.length ? character.outfit.materials.join(', ') : 'Standard materials';
+  const markings = character.bodyMarkings?.length ? character.bodyMarkings.join(', ') : 'None';
+  
   const prompt = `
     Full body concept art character design of a martial artist.
     Name: ${character.name}.
@@ -300,15 +383,15 @@ export const generateCharacterImage = async (character: CharacterData): Promise<
     Element/Power: ${character.element}.
     Origin/Nationality: ${character.nationality}.
     Martial Arts Style: ${character.martialArtStyle}.
-    Build: ${character.build.description}.
-    Skin Tone: ${character.appearance.skinTone}.
-    Face: ${character.appearance.faceType}, ${character.appearance.eyeShape} eyes.
-    Weapon: ${character.weapon.name} (${character.weapon.type}) made of ${character.weapon.material}.
-    Outfit: ${character.outfit.description}. 
-    Wearing materials: ${character.outfit.materials.join(', ')}.
-    Colors: Primary ${character.colorPalette.primary}, Secondary ${character.colorPalette.secondary}, Accent ${character.colorPalette.accent}.
-    Markings: ${character.bodyMarkings.join(', ')}.
-    Stance: ${character.fightingStance.description} (${character.fightingStance.type}).
+    Build: ${character.build?.description || 'Standard'}.
+    Skin Tone: ${character.appearance?.skinTone || 'Standard'}.
+    Face: ${character.appearance?.faceType || 'Standard'}, ${character.appearance?.eyeShape || 'Standard'} eyes.
+    Weapon: ${character.weapon?.name || 'Unarmed'} (${character.weapon?.type || 'Melee'}) made of ${character.weapon?.material || 'Steel'}.
+    Outfit: ${character.outfit?.description || 'Standard Gear'}. 
+    Wearing materials: ${outfitMaterials}.
+    Colors: Primary ${character.colorPalette?.primary || '#000'}, Secondary ${character.colorPalette?.secondary || '#333'}, Accent ${character.colorPalette?.accent || '#FFF'}.
+    Markings: ${markings}.
+    Stance: ${character.fightingStance?.description || 'Ready'}.
     Style: High quality, 3D render style, octane render, detailed textures, neutral studio background lighting.
   `;
 

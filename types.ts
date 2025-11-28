@@ -1,5 +1,3 @@
-
-
 export interface Outfit {
   name: string;
   description: string;
