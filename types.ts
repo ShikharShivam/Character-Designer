@@ -1,3 +1,4 @@
+
 export interface Outfit {
   name: string;
   description: string;
@@ -14,6 +15,7 @@ export interface CharacterData {
   alignment: string;
   element: string;
   martialArtStyle: string;
+  imageStyle?: string; // 'Cinematic' | 'GameSprite'
   appearance: {
     faceType: string;
     skinTone: string;
@@ -85,6 +87,7 @@ export interface GenerationOptions {
   ageGroup?: string;
   alignment?: string;
   element?: string;
+  imageStyle?: string; // 'Cinematic' | 'GameSprite'
   
   // Appearance
   faceType?: string;

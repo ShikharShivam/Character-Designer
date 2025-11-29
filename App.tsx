@@ -40,7 +40,8 @@ const App: React.FC = () => {
     hairColor: 'Random',
     facialHair: 'Random',
     height: 'Random',
-    weight: 'Random'
+    weight: 'Random',
+    imageStyle: 'Cinematic'
   });
 
   useEffect(() => {

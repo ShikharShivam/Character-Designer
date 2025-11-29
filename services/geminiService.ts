@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { CharacterData, GenerationOptions } from "../types";
 
@@ -356,10 +357,14 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
     });
 
     if (response.text) {
-      // Clean potential markdown blocks that confuse JSON.parse
       const cleanedText = response.text.replace(/```json\n?|\n?```/g, "").trim();
       const parsedData = JSON.parse(cleanedText);
-      return sanitizeCharacterData(parsedData);
+      const sanitized = sanitizeCharacterData(parsedData);
+      
+      // Inject the image style choice into the character data so the image generator knows what to do
+      sanitized.imageStyle = options.imageStyle || 'Cinematic';
+      
+      return sanitized;
     }
     throw new Error("No text returned from Gemini");
   } catch (error) {
@@ -369,12 +374,25 @@ export const generateCharacterProfile = async (options: GenerationOptions): Prom
 };
 
 export const generateCharacterImage = async (character: CharacterData): Promise<string | undefined> => {
-  // Defensive checks to prevent undefined access (the "Cannot read properties of undefined (reading 'join')" error)
+  // Defensive checks
   const outfitMaterials = character.outfit?.materials?.length ? character.outfit.materials.join(', ') : 'Standard materials';
   const markings = character.bodyMarkings?.length ? character.bodyMarkings.join(', ') : 'None';
   
+  // Determine Visual Style Prompt
+  let styleInstruction = "";
+  let stanceInstruction = character.fightingStance?.description || 'Ready';
+
+  // Game Sprite Mode logic
+  if (character.imageStyle === 'GameSprite') {
+     styleInstruction = "2D character sprite for video game. Flat colors, cel shaded, no gradients. Bold black outlines (thick linework). Clean vector art style. Simple silhouette for readability. Solid white background. Game asset ready. Front facing.";
+     // Override the fighting stance description for the visual generation to ensure a T-Pose/A-Pose
+     stanceInstruction = "Neutral A-Pose with arms extended 45 degrees down, legs shoulder width apart, palms open forward. Symmetrical front-facing T-Pose variant.";
+  } else {
+     styleInstruction = "High quality, 3D render style, octane render, detailed textures, cinematic lighting, neutral studio background.";
+  }
+
   const prompt = `
-    Full body concept art character design of a martial artist.
+    Full body character design of a martial artist.
     Name: ${character.name}.
     Species: ${character.species}.
     Gender: ${character.gender}.
@@ -391,8 +409,9 @@ export const generateCharacterImage = async (character: CharacterData): Promise<
     Wearing materials: ${outfitMaterials}.
     Colors: Primary ${character.colorPalette?.primary || '#000'}, Secondary ${character.colorPalette?.secondary || '#333'}, Accent ${character.colorPalette?.accent || '#FFF'}.
     Markings: ${markings}.
-    Stance: ${character.fightingStance?.description || 'Ready'}.
-    Style: High quality, 3D render style, octane render, detailed textures, neutral studio background lighting.
+    
+    POSE: ${stanceInstruction}.
+    STYLE: ${styleInstruction}.
   `;
 
   try {

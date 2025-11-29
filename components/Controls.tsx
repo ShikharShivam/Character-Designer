@@ -843,6 +843,15 @@ const Controls: React.FC<ControlsProps> = ({ options, setOptions, onGenerate, is
         {activeTab === 'visuals' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
              
+             {/* Render Style Input */}
+             <div>
+                <label className={labelClasses}>Render Style</label>
+                <select className={inputClasses} value={options.imageStyle || 'Cinematic'} onChange={(e) => handleChange('imageStyle', e.target.value)}>
+                  <option value="Cinematic">Cinematic 3D Render (Dynamic Stance)</option>
+                  <option value="GameSprite">2D Game Sprite (A-Pose / Flat)</option>
+                </select>
+             </div>
+
              {/* Theme */}
              <div>
                <label className={labelClasses}>Overall Theme</label>
